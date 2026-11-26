@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#06040a" />
-  <title>定制专属 3D 生日蛋糕</title>
+  <title>定制专属生日蛋糕</title>
   <script src="./config.js"></script>
   <link rel="stylesheet" href="./src/styles/customize.css" />
 </head>
@@ -13,9 +13,9 @@
 
   <main class="container">
     <header class="header">
-      <div class="pill">3D Birthday Cake Studio</div>
+      <div class="pill">Birthday Cake Studio</div>
       <h1>定制你的专属生日页面</h1>
-      <p class="subtitle">填写名字、蜡烛样式与祝福语，一键生成可直接在微信 / 手机浏览器点开的专属链接。</p>
+      <p class="subtitle">选择蛋糕款式、填写名字与祝福语，一键生成可直接在微信 / 手机浏览器点开的专属链接。</p>
     </header>
 
     <form id="custom-form" class="card" novalidate>
@@ -25,17 +25,12 @@
           <input id="input-name" type="text" maxlength="32" placeholder="例如：Mia" required />
         </div>
         <div class="field">
-          <label for="input-candles">蜡烛样式</label>
-          <select id="input-candles">
-            <option value="classic">浪漫细蜡烛（不显示年龄）</option>
-            <option value="number">立体数字蜡烛（显示 1–99 岁）</option>
+          <label for="input-style">蛋糕款式</label>
+          <select id="input-style">
+            <option value="strawberry">草莓庄园 · 法式花瓣珍珠奶油</option>
+            <option value="cherry">纯白车厘子 · 复古动物奶油</option>
           </select>
         </div>
-      </div>
-
-      <div id="age-field" class="field hidden">
-        <label for="input-age">蜡烛数字 (1–99)</label>
-        <input id="input-age" type="number" min="1" max="99" step="1" placeholder="18" />
       </div>
 
       <div class="field">

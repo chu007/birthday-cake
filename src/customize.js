@@ -1,12 +1,10 @@
-import { loadConfig, clampAge, sanitizeAudioUrl } from './config.js';
+import { loadConfig, sanitizeAudioUrl } from './config.js';
 
 const defaults = loadConfig();
 
 const form = document.getElementById('custom-form');
 const inputName = document.getElementById('input-name');
-const inputCandles = document.getElementById('input-candles');
-const ageField = document.getElementById('age-field');
-const inputAge = document.getElementById('input-age');
+const inputStyle = document.getElementById('input-style');
 const inputWish = document.getElementById('input-wish');
 const inputMusic = document.getElementById('input-music');
 const audioUrlField = document.getElementById('audio-url-field');
@@ -20,10 +18,8 @@ const copyBtn = document.getElementById('copy-btn');
 const copyToast = document.getElementById('copy-toast');
 
 inputName.value = defaults.name;
-inputCandles.value = defaults.candles;
-inputAge.value = String(defaults.age);
+inputStyle.value = defaults.style;
 inputWish.value = defaults.wish;
-ageField.classList.toggle('hidden', defaults.candles !== 'number');
 
 if (defaults.audioUrl) {
   inputMusic.value = 'custom_url';
@@ -32,10 +28,6 @@ if (defaults.audioUrl) {
 } else {
   inputMusic.value = defaults.music;
 }
-
-inputCandles.addEventListener('change', () => {
-  ageField.classList.toggle('hidden', inputCandles.value !== 'number');
-});
 
 inputMusic.addEventListener('change', () => {
   const isCustom = inputMusic.value === 'custom_url';
@@ -56,16 +48,12 @@ inputLocalFile.addEventListener('change', () => {
 
 function buildShareUrl() {
   const name = inputName.value.trim().slice(0, 32) || defaults.name;
-  const candleStyle = inputCandles.value === 'number' ? 'number' : 'classic';
+  const style = inputStyle.value === 'cherry' ? 'cherry' : 'strawberry';
   const wish = inputWish.value.trim().slice(0, 300) || defaults.wish;
 
   const url = new URL('./index.html', window.location.href);
+  url.searchParams.set('style', style);
   url.searchParams.set('name', name);
-  url.searchParams.set('candles', candleStyle);
-  if (candleStyle === 'number') {
-    const age = clampAge(inputAge.value, defaults.age);
-    url.searchParams.set('age', String(age));
-  }
   url.searchParams.set('wish', wish);
 
   if (inputMusic.value === 'custom_url') {
