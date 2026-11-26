@@ -1,5 +1,6 @@
 // 默认生日祝福配置：可直接在此修改后提交，即可作为主链接的默认内容
 window.BIRTHDAY_CONFIG = {
+  style: "pink",     // 可选款式: "pink"（粉白像素粒子版） | "starlight"（初版星夜流光·单蜡烛版）
   name: "You",
   candles: "classic", // "classic"（单根浪漫细蜡烛，不显示年龄） | "number"（立体数字蜡烛）
   age: 18,

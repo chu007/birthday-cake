@@ -126,8 +126,8 @@ function createFivePointStarTexture() {
   return tex;
 }
 
-// 星空蓝像素粒子蛋糕侧面贴图（2048x512）：向初版电光星空蓝靠拢 + 细腻像素方块与十字像素星点
-function createBluePixelSideTextures() {
+// 粉白像素粒子蛋糕侧面贴图（2048x512）：柔和珍珠白与樱花粉渐变 + 像素方块与十字像素星点
+function createPinkWhitePixelSideTextures() {
   const w = 2048;
   const h = 512;
 
@@ -141,28 +141,28 @@ function createBluePixelSideTextures() {
   emissiveCanvas.height = h;
   const ectx = emissiveCanvas.getContext('2d');
 
-  // 静谧深邃星空蓝 -> 宝蓝 -> 底部电光晴空蓝渐变
+  // 珠光奶白 -> 柔和樱花粉 -> 底部梦幻粉霞渐变
   const bg = ctx.createLinearGradient(0, 0, 0, h);
-  bg.addColorStop(0.0, '#0d193d');
-  bg.addColorStop(0.54, '#162d68');
-  bg.addColorStop(0.84, '#2458c9');
-  bg.addColorStop(1.0, '#38bdf8');
+  bg.addColorStop(0.0, '#fffbfd');
+  bg.addColorStop(0.50, '#ffe4ef');
+  bg.addColorStop(0.84, '#f9a8d4');
+  bg.addColorStop(1.0, '#f472b6');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
   ectx.fillStyle = '#000000';
   ectx.fillRect(0, 0, w, h);
 
-  // 底部电光蓝柔光极光波浪
+  // 底部柔粉霞极光波浪
   const drawBottomAurora = (targetCtx, alphaScale) => {
     targetCtx.save();
     targetCtx.globalCompositeOperation = 'screen';
 
     const baseBand = targetCtx.createLinearGradient(0, h * 0.66, 0, h);
-    baseBand.addColorStop(0.0, 'rgba(56, 189, 248, 0.0)');
-    baseBand.addColorStop(0.45, `rgba(37, 99, 235, ${0.42 * alphaScale})`);
-    baseBand.addColorStop(0.82, `rgba(56, 189, 248, ${0.72 * alphaScale})`);
-    baseBand.addColorStop(1.0, `rgba(125, 211, 252, ${0.88 * alphaScale})`);
+    baseBand.addColorStop(0.0, 'rgba(249, 168, 212, 0.0)');
+    baseBand.addColorStop(0.45, `rgba(244, 114, 182, ${0.34 * alphaScale})`);
+    baseBand.addColorStop(0.82, `rgba(251, 207, 232, ${0.58 * alphaScale})`);
+    baseBand.addColorStop(1.0, `rgba(255, 241, 245, ${0.72 * alphaScale})`);
     targetCtx.fillStyle = baseBand;
     targetCtx.fillRect(0, h * 0.66, w, h * 0.34);
 
@@ -170,12 +170,12 @@ function createBluePixelSideTextures() {
       const cx = (i / 18) * w + Math.sin(i * 2.1) * 38;
       const cy = h * (0.90 - (i % 3) * 0.05);
       const rx = 110 + (i % 4) * 38;
-      const col = i % 2 === 0 ? '56, 189, 248' : '96, 165, 250';
+      const col = i % 2 === 0 ? '244, 114, 182' : '251, 207, 232';
 
       for (const offsetX of [0, w, -w]) {
         const g = targetCtx.createRadialGradient(cx + offsetX, cy, 4, cx + offsetX, cy, rx);
-        g.addColorStop(0.0, `rgba(${col}, ${0.52 * alphaScale})`);
-        g.addColorStop(0.55, `rgba(${col}, ${0.20 * alphaScale})`);
+        g.addColorStop(0.0, `rgba(${col}, ${0.46 * alphaScale})`);
+        g.addColorStop(0.55, `rgba(${col}, ${0.18 * alphaScale})`);
         g.addColorStop(1.0, `rgba(${col}, 0.0)`);
         targetCtx.fillStyle = g;
         targetCtx.beginPath();
@@ -186,20 +186,21 @@ function createBluePixelSideTextures() {
     targetCtx.restore();
   };
 
-  drawBottomAurora(ctx, 0.9);
-  drawBottomAurora(ectx, 0.56);
+  drawBottomAurora(ctx, 0.86);
+  drawBottomAurora(ectx, 0.42);
 
-  // 像素感细网格暗纹（微妙像素布面质感）
-  ctx.fillStyle = 'rgba(186, 230, 253, 0.035)';
+  // 微妙像素格子纹理
+  ctx.fillStyle = 'rgba(244, 114, 182, 0.045)';
   for (let gx = 0; gx < w; gx += 16) {
     ctx.fillRect(gx, 0, 1, h);
   }
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.14)';
   for (let gy = 0; gy < h; gy += 16) {
     ctx.fillRect(0, gy, w, 1);
   }
 
-  // 散布清晰方形像素块与像素小十字星（保留粒子感与像素感）
-  const pixelPalette = ['#bae6fd', '#7dd3fc', '#38bdf8', '#ffffff', '#fde68a', '#fbcfe8'];
+  // 散布清晰方形像素块与像素小十字星（粉白金搭配，保留粒子感与像素感）
+  const pixelPalette = ['#ffffff', '#fff1f5', '#fbcfe8', '#f472b6', '#fde68a'];
   const snap = (v, step = 8) => Math.round(v / step) * step;
 
   for (let i = 0; i < 360; i += 1) {
@@ -210,18 +211,17 @@ function createBluePixelSideTextures() {
     const isBright = i % 3 === 0;
 
     ctx.fillStyle = col;
-    ctx.globalAlpha = isBright ? 0.9 : 0.62;
+    ctx.globalAlpha = isBright ? 0.92 : 0.68;
     ctx.fillRect(px, py, cell, cell);
 
     if (i % 9 === 0) {
-      // 精致像素十字星
       ctx.fillRect(px - cell, py, cell * 3, cell);
       ctx.fillRect(px, py - cell, cell, cell * 3);
     }
 
     if (isBright) {
       ectx.fillStyle = col;
-      ectx.globalAlpha = i % 9 === 0 ? 0.62 : 0.42;
+      ectx.globalAlpha = i % 9 === 0 ? 0.45 : 0.30;
       ectx.fillRect(px, py, cell, cell);
       if (i % 9 === 0) {
         ectx.fillRect(px - cell, py, cell * 3, cell);
@@ -243,8 +243,8 @@ function createBluePixelSideTextures() {
   return { map, emissiveMap };
 }
 
-// 蛋糕上表面平滑顶盘贴图（1024x1024）：无任何裱花坨坨，干净冰蓝渐变 + 前半区发光 "happy birthday"
-function createBluePixelTopTextures() {
+// 粉白蛋糕上表面平滑顶盘贴图（1024x1024）：无坨坨，柔和粉白渐变 + 前半区清晰 "happy / birthday"
+function createPinkWhitePixelTopTextures() {
   const size = 1024;
   const cx = size / 2;
   const cy = size / 2;
@@ -259,24 +259,21 @@ function createBluePixelTopTextures() {
   emissive.height = size;
   const ectx = emissive.getContext('2d');
 
-  // 深宝蓝中心 -> 晴空蓝 -> 清透冰蓝边缘
+  // 柔和蜜桃樱花粉中心 -> 浅粉 -> 清透珠光白边缘（控制明度不过曝）
   const grad = ctx.createRadialGradient(cx, cy, 24, cx, cy, size * 0.5);
-  grad.addColorStop(0.0, '#14265a');
-  grad.addColorStop(0.55, '#1e3e8a');
-  grad.addColorStop(0.84, '#2563eb');
-  grad.addColorStop(1.0, '#60a5fa');
+  grad.addColorStop(0.0, '#f49ac0');
+  grad.addColorStop(0.55, '#f9bad5');
+  grad.addColorStop(0.84, '#ffd9e8');
+  grad.addColorStop(1.0, '#fff2f7');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
 
-  const emGrad = ectx.createRadialGradient(cx, cy, 20, cx, cy, size * 0.5);
-  emGrad.addColorStop(0.0, 'rgba(37, 99, 235, 0.14)');
-  emGrad.addColorStop(0.7, 'rgba(56, 189, 248, 0.22)');
-  emGrad.addColorStop(1.0, 'rgba(125, 211, 252, 0.36)');
-  ectx.fillStyle = emGrad;
+  // 顶盘底面不再加发白自发光，避免点亮蜡烛后过曝淹没文字
+  ectx.fillStyle = '#000000';
   ectx.fillRect(0, 0, size, size);
 
-  // 外圈极细像素星点围边（贴平表面，不凸起不凌乱）
-  const pixelCols = ['#ffffff', '#bae6fd', '#fde68a', '#fbcfe8'];
+  // 外圈极细像素星点围边（贴平表面）
+  const pixelCols = ['#ffffff', '#fbcfe8', '#fde68a', '#ec4899'];
   for (let i = 0; i < 150; i += 1) {
     const a = (i / 150) * Math.PI * 2 + (Math.random() - 0.5) * 0.04;
     const r = size * (0.39 + Math.random() * 0.085);
@@ -286,17 +283,19 @@ function createBluePixelTopTextures() {
     const col = pixelCols[i % pixelCols.length];
 
     ctx.fillStyle = col;
-    ctx.globalAlpha = 0.78;
+    ctx.globalAlpha = 0.85;
     ctx.fillRect(x, y, sz, sz);
 
-    ectx.fillStyle = col;
-    ectx.globalAlpha = 0.52;
-    ectx.fillRect(x, y, sz, sz);
+    if (i % 2 === 0) {
+      ectx.fillStyle = col;
+      ectx.globalAlpha = 0.25;
+      ectx.fillRect(x, y, sz, sz);
+    }
   }
   ctx.globalAlpha = 1;
   ectx.globalAlpha = 1;
 
-  // 在蛋糕上表面前半区绘制清晰可辨的两行 "happy / birthday"（纵向适度拉伸以抵消 3D 俯视压扁，确保一眼可读）
+  // 粉白奶油顶面上用深覆盆子玫瑰粉书写两行 "happy / birthday"（如实体蛋糕上的巧克力酱/玫瑰裱花字，点亮后依然清晰醒目）
   const paintTopText = (targetCtx, isEmissive) => {
     targetCtx.save();
     targetCtx.textAlign = 'center';
@@ -311,12 +310,12 @@ function createBluePixelTopTextures() {
       if (!isEmissive) {
         targetCtx.lineWidth = 10;
         targetCtx.lineJoin = 'round';
-        targetCtx.strokeStyle = 'rgba(10, 22, 58, 0.90)';
+        targetCtx.strokeStyle = 'rgba(255, 248, 252, 0.92)';
         targetCtx.strokeText(text, 0, 0);
-        targetCtx.fillStyle = '#ffffff';
+        targetCtx.fillStyle = '#9d2458';
         targetCtx.fillText(text, 0, 0);
       } else {
-        targetCtx.fillStyle = 'rgba(224, 242, 254, 0.24)';
+        targetCtx.fillStyle = 'rgba(244, 114, 182, 0.12)';
         targetCtx.fillText(text, 0, 0);
       }
       targetCtx.restore();
@@ -337,8 +336,8 @@ function createBluePixelTopTextures() {
   return { map, emissiveMap };
 }
 
-// 平底白色圆托盘贴图：珠光白瓷面 + 蛋糕正下方淡淡天蓝极光倒影
-function createBlueGlowTrayTexture() {
+// 平底白色圆托盘贴图：珠光白瓷面 + 蛋糕正下方淡淡柔粉倒影
+function createPinkGlowTrayTexture() {
   const size = 512;
   const canvas = document.createElement('canvas');
   canvas.width = size;
@@ -348,9 +347,9 @@ function createBlueGlowTrayTexture() {
   const cy = size / 2;
 
   const grad = ctx.createRadialGradient(cx, cy, 24, cx, cy, size * 0.5);
-  grad.addColorStop(0.0, '#3b82f6');
-  grad.addColorStop(0.56, '#93c5fd');
-  grad.addColorStop(0.68, '#eff6ff');
+  grad.addColorStop(0.0, '#f9a8d4');
+  grad.addColorStop(0.56, '#fbcfe8');
+  grad.addColorStop(0.68, '#fff5f8');
   grad.addColorStop(0.82, '#ffffff');
   grad.addColorStop(1.0, '#fffaf8');
   ctx.fillStyle = grad;
@@ -434,15 +433,15 @@ export class BirthdayScene {
     this.pixelTex = createPixelSquareTexture();
     this.glintTex = createDiamondGlintTexture();
     this.starTex = createFivePointStarTexture();
-    this.sideTextures = createBluePixelSideTextures();
-    this.topTextures = createBluePixelTopTextures();
-    this.trayTex = createBlueGlowTrayTexture();
+    this.sideTextures = createPinkWhitePixelSideTextures();
+    this.topTextures = createPinkWhitePixelTopTextures();
+    this.trayTex = createPinkGlowTrayTexture();
 
     this._initRenderer();
     this._initScene();
     this._initPostProcessing();
     this._buildBackdropStars();
-    this._buildFlatTrayAndBluePixelCake();
+    this._buildFlatTrayAndPinkPixelCake();
     this._buildWideAiryArchAbove();
     this._buildCandles();
     this._buildFreeSparkles();
@@ -505,14 +504,14 @@ export class BirthdayScene {
       this.userDragging = false;
     });
 
-    this.ambient = new THREE.AmbientLight(0xdfeaff, 0.76);
+    this.ambient = new THREE.AmbientLight(0xfff0f5, 0.78);
     this.scene.add(this.ambient);
 
-    this.keyLight = new THREE.DirectionalLight(0xfffaf0, 1.05);
+    this.keyLight = new THREE.DirectionalLight(0xfffaf0, 1.04);
     this.keyLight.position.set(3.2, 4.8, 3.8);
     this.scene.add(this.keyLight);
 
-    this.rimLight = new THREE.DirectionalLight(0x93c5fd, 0.85);
+    this.rimLight = new THREE.DirectionalLight(0xffd6e7, 0.85);
     this.rimLight.position.set(-3.4, 3.6, -2.8);
     this.scene.add(this.rimLight);
 
@@ -584,15 +583,15 @@ export class BirthdayScene {
     this.scene.add(this.bgStars);
   }
 
-  _buildFlatTrayAndBluePixelCake() {
-    // 1. 扁平珠光白圆托盘（带蛋糕底部淡蓝色极光倒影 + 细香槟金镶边）
+  _buildFlatTrayAndPinkPixelCake() {
+    // 1. 扁平珠光白圆托盘（带蛋糕底部淡淡柔粉倒影 + 细香槟金镶边）
     const trayGeo = this._track(new THREE.CylinderGeometry(1.30, 1.28, 0.032, 72));
     const trayMat = this._track(new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       map: this.trayTex,
-      emissive: 0xdbeafe,
+      emissive: 0xffe4ef,
       emissiveMap: this.trayTex,
-      emissiveIntensity: 0.16,
+      emissiveIntensity: 0.14,
       roughness: 0.22,
       metalness: 0.04,
       clearcoat: 0.72,
@@ -615,25 +614,25 @@ export class BirthdayScene {
     trayRim.position.y = 0.024;
     this.cakeGroup.add(trayRim);
 
-    // 蛋糕底部晴空蓝微光环
+    // 蛋糕底部樱花粉微光环
     const baseGlowGeo = this._track(new THREE.TorusGeometry(0.825, 0.014, 10, 72));
     const baseGlowMat = this._track(new THREE.MeshBasicMaterial({
-      color: 0x60a5fa,
+      color: 0xf9a8d4,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.48,
     }));
     const baseGlowRing = new THREE.Mesh(baseGlowGeo, baseGlowMat);
     baseGlowRing.rotation.x = Math.PI / 2;
     baseGlowRing.position.y = 0.034;
     this.cakeGroup.add(baseGlowRing);
 
-    // 2. 深邃星空蓝内芯 + 微透像素粒子蛋糕筒身（保留粒子感与通透感）
+    // 2. 暖玫粉内芯 + 粉白微透像素粒子蛋糕筒身（保留粒子感与通透感）
     const innerCoreGeo = this._track(new THREE.CylinderGeometry(0.76, 0.76, 0.80, 48));
     const innerCoreMat = this._track(new THREE.MeshStandardMaterial({
-      color: 0x0b183e,
-      emissive: 0x172f6e,
-      emissiveIntensity: 0.35,
-      roughness: 0.6,
+      color: 0x9d3b68,
+      emissive: 0xc05283,
+      emissiveIntensity: 0.28,
+      roughness: 0.55,
     }));
     const innerCore = new THREE.Mesh(innerCoreGeo, innerCoreMat);
     innerCore.position.y = 0.445;
@@ -644,11 +643,11 @@ export class BirthdayScene {
       map: this.sideTextures.map,
       emissive: 0xffffff,
       emissiveMap: this.sideTextures.emissiveMap,
-      emissiveIntensity: 0.68,
+      emissiveIntensity: 0.55,
       transparent: true,
       opacity: 0.90,
       roughness: 0.24,
-      metalness: 0.06,
+      metalness: 0.04,
       clearcoat: 0.58,
       clearcoatRoughness: 0.16,
     }));
@@ -656,12 +655,12 @@ export class BirthdayScene {
     bodyMesh.position.y = 0.452;
     this.cakeGroup.add(bodyMesh);
 
-    // 平滑无坨坨的蛋糕顶部基底 + 精确 UV 定向圆盘（展示 "happy birthday"）
+    // 平滑无坨坨的蛋糕顶部基底 + 精确 UV 定向圆盘（展示 "happy / birthday"）
     const topRimGeo = this._track(new THREE.CylinderGeometry(0.79, 0.80, 0.036, 72));
     const topRimMat = this._track(new THREE.MeshPhysicalMaterial({
-      color: 0x2563eb,
-      emissive: 0x1d4ed8,
-      emissiveIntensity: 0.32,
+      color: 0xf9a8d4,
+      emissive: 0xf472b6,
+      emissiveIntensity: 0.22,
       roughness: 0.26,
       clearcoat: 0.48,
     }));
@@ -674,21 +673,21 @@ export class BirthdayScene {
       map: this.topTextures.map,
       emissive: 0xffffff,
       emissiveMap: this.topTextures.emissiveMap,
-      emissiveIntensity: 0.85,
-      roughness: 0.26,
-      metalness: 0.03,
-      clearcoat: 0.45,
-      clearcoatRoughness: 0.18,
+      emissiveIntensity: 0.24,
+      roughness: 0.42,
+      metalness: 0.02,
+      clearcoat: 0.14,
+      clearcoatRoughness: 0.28,
     }));
     const topFace = new THREE.Mesh(topFaceGeo, topFaceMat);
     topFace.rotation.x = -Math.PI / 2;
     topFace.position.y = 0.896;
     this.cakeGroup.add(topFace);
 
-    // 3. 蛋糕底座一圈紧贴相连、统一珠光白的珍珠围边（完全连成一体，无分离彩色珠子）
+    // 3. 蛋糕底座一圈紧贴相连、统一珠光白的珍珠围边（完全连成一体）
     const pearlMat = this._track(new THREE.MeshPhysicalMaterial({
-      color: 0xf4f9ff,
-      emissive: 0xdbeafe,
+      color: 0xfff8fb,
+      emissive: 0xffd6e7,
       emissiveIntensity: 0.14,
       roughness: 0.22,
       metalness: 0.06,
@@ -710,7 +709,7 @@ export class BirthdayScene {
       this.cakeGroup.add(pearl);
     }
 
-    // 4. 3D 环绕蛋糕筒身与肩缘的像素粒子星海（保留立体粒子感与像素感）
+    // 4. 3D 环绕蛋糕筒身与肩缘的粉白金像素粒子星海
     const pixelCount = 1150;
     const pPos = new Float32Array(pixelCount * 3);
     const pCol = new Float32Array(pixelCount * 3);
@@ -719,12 +718,12 @@ export class BirthdayScene {
     const pSpeeds = new Float32Array(pixelCount);
 
     const pPalette = [
-      new THREE.Color(0x7dd3fc), // 晴空蓝
-      new THREE.Color(0x38bdf8), // 电光蓝
-      new THREE.Color(0xbae6fd), // 冰晶蓝
       new THREE.Color(0xffffff), // 纯白
-      new THREE.Color(0xfde68a), // 香槟金
+      new THREE.Color(0xfff5f8), // 珍珠白
       new THREE.Color(0xfbcfe8), // 淡樱粉
+      new THREE.Color(0xf9a8d4), // 柔樱粉
+      new THREE.Color(0xf472b6), // 桃粉色
+      new THREE.Color(0xfde68a), // 香槟金
     ];
 
     for (let i = 0; i < pixelCount; i += 1) {
@@ -816,7 +815,7 @@ export class BirthdayScene {
           float wisp = smoothstep(-0.15, 0.65, sin(angle * 3.0 + vLocalPos.y * 2.1 + uTime * 0.35));
           float pulse = 0.72 + 0.28 * sin(uTime * 1.4 + vLocalPos.y * 1.8);
 
-          vec3 col = mix(vec3(0.82, 0.92, 1.0), vec3(0.99, 0.90, 0.68), 0.45);
+          vec3 col = mix(vec3(1.0, 0.94, 0.96), vec3(0.99, 0.90, 0.68), 0.45);
           float alpha = rim * plateFade * (0.25 + 0.75 * wisp) * 0.48 * pulse * uOpacity;
           gl_FragColor = vec4(col, alpha);
         }
@@ -830,7 +829,7 @@ export class BirthdayScene {
 
     const arcSpecs = [
       { radius: 2.24, centerY: 1.44, rotY: 0.15, freq: 3.0, phase: 0.4, speed: 0.22, color: new THREE.Color(0xfef3c7), peakAlpha: 0.70 },
-      { radius: 2.31, centerY: 1.46, rotY: 1.35, freq: 3.5, phase: 2.1, speed: -0.18, color: new THREE.Color(0xe0f2fe), peakAlpha: 0.58 },
+      { radius: 2.31, centerY: 1.46, rotY: 1.35, freq: 3.5, phase: 2.1, speed: -0.18, color: new THREE.Color(0xfff1f5), peakAlpha: 0.58 },
       { radius: 2.37, centerY: 1.45, rotY: 2.45, freq: 2.5, phase: 4.0, speed: 0.15, color: new THREE.Color(0xfde68a), peakAlpha: 0.52 },
     ];
 
@@ -913,7 +912,7 @@ export class BirthdayScene {
       new THREE.Color(0xfff5f8), // 珍珠白
       new THREE.Color(0xfde68a), // 香槟金
       new THREE.Color(0xfbcfe8), // 淡樱粉
-      new THREE.Color(0xbae6fd), // 浅冰蓝星芒
+      new THREE.Color(0xf9a8d4), // 玫瑰粉金
     ];
 
     const createLayer = ({ count, tex, sizeMin, sizeMax, speedMin, speedMax, bounds, riseSpeedRange, maxPx = 28.0, onCakeOnly = false }) => {

@@ -567,8 +567,8 @@ function createSpiralStripeTexture(baseHex, stripeHex) {
   return tex;
 }
 
-// 浪漫无龄单根细蜡烛：居中的珍珠白与香槟金螺旋细长蜡烛（不显示年龄）
-export function createClassicCandles() {
+// 浪漫无龄单根细蜡烛：居中的细长蜡烛（支持珍珠白螺旋 / 暖香槟金，且可精准匹配原数字蜡烛高度）
+export function createClassicCandles({ height = 0.54, radius = 0.024, waxTheme = 'pearl' } = {}) {
   const root = new THREE.Group();
   const extraDisposables = [];
   const track = (obj) => {
@@ -576,7 +576,8 @@ export function createClassicCandles() {
     return obj;
   };
 
-  const centerTex = track(createSpiralStripeTexture('#fffaf6', '#f2cd80'));
+  const isGold = waxTheme === 'gold';
+  const centerTex = isGold ? null : track(createSpiralStripeTexture('#fffaf6', '#f2cd80'));
   const goldCupMat = track(new THREE.MeshStandardMaterial({
     color: 0xf7d58b,
     emissive: 0x5c4212,
@@ -587,7 +588,17 @@ export function createClassicCandles() {
   const wickMat = track(new THREE.MeshStandardMaterial({ color: 0x26201c, roughness: 0.9 }));
 
   const specs = [
-    { x: 0.0, z: 0.0, height: 0.54, color: '#fffaf6', stripe: true, flameScale: 0.98, lightIntensity: 1.85, seed: 2.7 },
+    {
+      x: 0.0,
+      z: 0.0,
+      height,
+      radius,
+      color: isGold ? 0xffe496 : '#fffaf6',
+      stripe: !isGold,
+      flameScale: isGold ? 0.96 : 0.98,
+      lightIntensity: isGold ? 1.75 : 1.85,
+      seed: 2.7,
+    },
   ];
 
   const candleConfigs = [];
@@ -610,21 +621,21 @@ export function createClassicCandles() {
     group.add(rim);
 
     // 纤细光滑蜡烛杆
-    const bodyGeo = track(new THREE.CylinderGeometry(0.024, 0.025, spec.height, 22));
+    const bodyGeo = track(new THREE.CylinderGeometry(spec.radius, spec.radius + 0.001, spec.height, 22));
     const bodyMat = track(new THREE.MeshPhysicalMaterial({
       color: spec.stripe ? 0xffffff : spec.color,
       map: spec.stripe ? centerTex : null,
-      emissive: 0xffeef4,
-      emissiveIntensity: 0.14,
-      roughness: 0.28,
-      metalness: 0.04,
+      emissive: isGold ? 0x7c5312 : 0xffeef4,
+      emissiveIntensity: isGold ? 0.28 : 0.14,
+      roughness: isGold ? 0.22 : 0.28,
+      metalness: isGold ? 0.26 : 0.04,
       clearcoat: 0.35,
     }));
     const body = new THREE.Mesh(bodyGeo, bodyMat);
     body.position.y = 0.03 + spec.height / 2;
     group.add(body);
 
-    const topCapGeo = track(new THREE.SphereGeometry(0.024, 14, 10));
+    const topCapGeo = track(new THREE.SphereGeometry(spec.radius, 14, 10));
     const topCap = new THREE.Mesh(topCapGeo, bodyMat);
     topCap.scale.set(1, 0.4, 1);
     topCap.position.y = 0.03 + spec.height;

@@ -3,6 +3,7 @@ import { loadConfig, clampAge, sanitizeAudioUrl } from './config.js';
 const defaults = loadConfig();
 
 const form = document.getElementById('custom-form');
+const inputStyle = document.getElementById('input-style');
 const inputName = document.getElementById('input-name');
 const inputCandles = document.getElementById('input-candles');
 const ageField = document.getElementById('age-field');
@@ -19,6 +20,7 @@ const generatedUrlInput = document.getElementById('generated-url');
 const copyBtn = document.getElementById('copy-btn');
 const copyToast = document.getElementById('copy-toast');
 
+inputStyle.value = defaults.style;
 inputName.value = defaults.name;
 inputCandles.value = defaults.candles;
 inputAge.value = String(defaults.age);
@@ -55,11 +57,13 @@ inputLocalFile.addEventListener('change', () => {
 });
 
 function buildShareUrl() {
+  const style = inputStyle.value === 'starlight' ? 'starlight' : 'pink';
   const name = inputName.value.trim().slice(0, 32) || defaults.name;
   const candleStyle = inputCandles.value === 'number' ? 'number' : 'classic';
   const wish = inputWish.value.trim().slice(0, 300) || defaults.wish;
 
   const url = new URL('./index.html', window.location.href);
+  url.searchParams.set('style', style);
   url.searchParams.set('name', name);
   url.searchParams.set('candles', candleStyle);
   if (candleStyle === 'number') {

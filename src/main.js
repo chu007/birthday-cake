@@ -2,6 +2,7 @@ import { loadConfig } from './config.js';
 import { MusicEngine } from './audio/musicEngine.js';
 import { BlowDetector } from './audio/blowDetector.js';
 import { BirthdayScene } from './scene/birthdayScene.js';
+import { StarlightScene } from './scene/starlightScene.js';
 
 const config = loadConfig();
 document.title = config.name === 'You' ? 'Happy Birthday' : `Happy Birthday · ${config.name}`;
@@ -84,7 +85,8 @@ const blowDetector = new BlowDetector({
   },
 });
 
-scene = new BirthdayScene(sceneContainer, {
+const SceneClass = config.style === 'starlight' ? StarlightScene : BirthdayScene;
+scene = new SceneClass(sceneContainer, {
   candleStyle: config.candles,
   age: config.age,
   onFlameTap() {
