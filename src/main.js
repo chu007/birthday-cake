@@ -44,7 +44,10 @@ const viewCakeBtn = document.getElementById('view-cake-btn');
 // 所有用户输入严格使用 textContent 注入，避免 XSS
 introRecipient.textContent = config.name === 'You' ? 'A Birthday Surprise' : `For ${config.name}`;
 recipientLabel.textContent = config.name === 'You' ? 'For You' : `${config.name} 专属`;
-wishCardTag.textContent = `For ${config.name} · ${config.age}`;
+// 当使用经典无龄蜡烛时，不展示任何年龄数字
+wishCardTag.textContent = config.candles === 'number'
+  ? `For ${config.name} · ${config.age}`
+  : `For ${config.name}`;
 wishCardText.textContent = config.wish;
 
 const music = new MusicEngine({
@@ -83,6 +86,7 @@ const blowDetector = new BlowDetector({
 });
 
 scene = new BirthdayScene(sceneContainer, {
+  candleStyle: config.candles,
   age: config.age,
   onFlameTap() {
     handleExtinguish();
@@ -106,8 +110,9 @@ function startCelebration() {
   updateMuteIcon(music.isMuted());
 
   window.setTimeout(() => {
+    introOverlay.classList.add('hidden');
     celebrationUi.classList.remove('hidden');
-  }, 280);
+  }, 260);
 }
 
 introOverlay.addEventListener('click', startCelebration);

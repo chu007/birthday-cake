@@ -1,9 +1,11 @@
 const VALID_PRESETS = new Set(['musicbox', 'piano', 'chimes']);
+const VALID_CANDLE_STYLES = new Set(['classic', 'number']);
 
 const DEFAULT_CONFIG = {
   name: 'You',
+  candles: 'classic',
   age: 18,
-  wish: '愿你岁岁常欢愉，万事皆胜意，所行皆坦途，生日快乐！',
+  wish: '生日快乐！愿你永远闪闪发光，自由快乐！',
   music: 'musicbox',
   audioUrl: '',
 };
@@ -46,6 +48,15 @@ export function loadConfig() {
   const paramAge = params.get('age');
   const age = paramAge !== null && paramAge.trim() !== '' ? clampAge(paramAge, baseAge) : baseAge;
 
+  const baseCandles = VALID_CANDLE_STYLES.has(globalCfg.candles) ? globalCfg.candles : DEFAULT_CONFIG.candles;
+  const paramCandles = params.get('candles');
+  let candles = baseCandles;
+  if (paramCandles && VALID_CANDLE_STYLES.has(paramCandles)) {
+    candles = paramCandles;
+  } else if (paramAge !== null && paramAge.trim() !== '' && paramCandles !== 'classic') {
+    candles = 'number';
+  }
+
   const baseWish = typeof globalCfg.wish === 'string' && globalCfg.wish.trim()
     ? globalCfg.wish.trim().slice(0, 300)
     : DEFAULT_CONFIG.wish;
@@ -62,6 +73,7 @@ export function loadConfig() {
 
   return {
     name,
+    candles,
     age,
     wish,
     music,
