@@ -44,7 +44,9 @@ const viewCakeBtn = document.getElementById('view-cake-btn');
 // 所有用户输入严格使用 textContent 注入，避免 XSS
 introRecipient.textContent = config.name === 'You' ? 'A Birthday Surprise' : `For ${config.name}`;
 recipientLabel.textContent = config.name === 'You' ? 'For You' : `${config.name} 专属`;
-wishCardTag.textContent = `For ${config.name}`;
+wishCardTag.textContent = config.candles === 'number'
+  ? `For ${config.name} · ${config.age}`
+  : `For ${config.name}`;
 wishCardText.textContent = config.wish;
 
 const music = new MusicEngine({
@@ -83,7 +85,8 @@ const blowDetector = new BlowDetector({
 });
 
 scene = new BirthdayScene(sceneContainer, {
-  cakeStyle: config.style,
+  candleStyle: config.candles,
+  age: config.age,
   onFlameTap() {
     handleExtinguish();
   },

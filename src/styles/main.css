@@ -12,7 +12,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #050308;
+  background: #05040b;
   color: #fff8fa;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
   user-select: none;
@@ -22,70 +22,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: #050308;
   touch-action: none;
-  overflow: hidden;
-}
-
-.fx-bg-canvas,
-.fx-fg-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-}
-
-.fx-bg-canvas {
-  z-index: 1;
-}
-
-.stage-viewport {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  perspective: 1000px;
-  pointer-events: none;
-}
-
-.cake-stage {
-  position: absolute;
-  left: 50%;
-  top: 41%;
-  width: min(92vw, 56vh, 460px);
-  height: min(92vw, 56vh, 460px);
-  transform-style: preserve-3d;
-  will-change: transform;
-  pointer-events: none;
-}
-
-@media (min-width: 768px) {
-  .cake-stage {
-    top: 43%;
-  }
-}
-
-.cake-layer,
-.flame-layer {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-}
-
-.cake-layer {
-  z-index: 1;
-}
-
-.flame-layer {
-  z-index: 2;
-}
-
-.fx-fg-canvas {
-  z-index: 3;
 }
 
 .hidden {

@@ -1,9 +1,7 @@
-const VALID_STYLES = new Set(['strawberry', 'cherry']);
 const VALID_PRESETS = new Set(['musicbox', 'piano', 'chimes']);
 const VALID_CANDLE_STYLES = new Set(['classic', 'number']);
 
 const DEFAULT_CONFIG = {
-  style: 'strawberry',
   name: 'You',
   candles: 'classic',
   age: 18,
@@ -40,10 +38,6 @@ export function loadConfig() {
   const globalCfg = typeof window !== 'undefined' && window.BIRTHDAY_CONFIG ? window.BIRTHDAY_CONFIG : {};
   const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
 
-  const baseStyle = VALID_STYLES.has(globalCfg.style) ? globalCfg.style : DEFAULT_CONFIG.style;
-  const paramStyle = params.get('style');
-  const style = paramStyle && VALID_STYLES.has(paramStyle) ? paramStyle : baseStyle;
-
   const baseName = typeof globalCfg.name === 'string' && globalCfg.name.trim()
     ? globalCfg.name.trim().slice(0, 32)
     : DEFAULT_CONFIG.name;
@@ -78,7 +72,6 @@ export function loadConfig() {
   const audioUrl = paramAudio !== null ? sanitizeAudioUrl(paramAudio) : baseAudio;
 
   return {
-    style,
     name,
     candles,
     age,
