@@ -98,13 +98,16 @@ function startCelebration() {
   if (hasStarted) return;
   hasStarted = true;
   introOverlay.classList.add('fade-out');
-  celebrationUi.classList.remove('hidden');
   muteBtn.classList.remove('hidden');
 
   scene.runAndLight();
   music.playIgniteSparkle();
   music.start();
   updateMuteIcon(music.isMuted());
+
+  window.setTimeout(() => {
+    celebrationUi.classList.remove('hidden');
+  }, 280);
 }
 
 introOverlay.addEventListener('click', startCelebration);
