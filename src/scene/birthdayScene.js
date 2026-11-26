@@ -463,6 +463,7 @@ export class BirthdayScene {
     this.lightProgress = 0;
     this.igniteElapsed = 0;
     this.elapsed = 0;
+    this.viewOffsetNormX = 0;
     this.disposed = false;
     this.extraDisposables = [];
 
@@ -482,7 +483,6 @@ export class BirthdayScene {
     this._buildFlatTrayAndPinkPixelCake();
     this._buildWideAiryArchAbove();
     this._buildCandles();
-    this._buildSpiralRibbons();
     this._buildIgnitionSparklerBurst();
     this._buildFreeSparkles();
     this._buildFireworks();
@@ -970,61 +970,6 @@ export class BirthdayScene {
     this.cakeGroup.add(this.candles.root);
   }
 
-  // 双螺旋星光彩带：点蜡烛后由托盘旋转盘绕而起，似丝带般舞动升空
-  _buildSpiralRibbons() {
-    const count = 360;
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
-    const phases = new Float32Array(count);
-    const speeds = new Float32Array(count);
-    const reveals = new Float32Array(count);
-    const meta = [];
-
-    const ribbonColors = [
-      new THREE.Color(0xffe49e), // 香槟金
-      new THREE.Color(0xffffff), // 钻石白
-      new THREE.Color(0xff79be), // 亮樱粉
-      new THREE.Color(0xfbcfe8), // 柔淡粉
-      new THREE.Color(0xf3c6ff), // 虹彩粉紫
-    ];
-
-    for (let i = 0; i < count; i += 1) {
-      const arm = i % 2;
-      const u = Math.floor(i / 2) / (count / 2); // 0 (底) .. 1 (顶)
-      const jitterR = (Math.random() - 0.5) * 0.14;
-      const jitterY = (Math.random() - 0.5) * 0.10;
-      const jitterA = (Math.random() - 0.5) * 0.18;
-
-      const c = ribbonColors[i % ribbonColors.length];
-      colors[i * 3] = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
-
-      sizes[i] = i % 5 === 0 ? 0.115 + Math.random() * 0.045 : 0.055 + Math.random() * 0.045;
-      phases[i] = Math.random() * Math.PI * 2;
-      speeds[i] = 2.4 + Math.random() * 3.0;
-      reveals[i] = 0;
-
-      meta.push({ arm, u, jitterR, jitterY, jitterA });
-    }
-
-    const geo = this._track(new THREE.BufferGeometry());
-    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
-    geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
-    geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
-    geo.setAttribute('aSpeed', new THREE.BufferAttribute(speeds, 1));
-    geo.setAttribute('aReveal', new THREE.BufferAttribute(reveals, 1));
-
-    const mat = this._track(createTwinklePointsMaterial(this.glintTex, 22.0, 2.0));
-    const points = new THREE.Points(geo, mat);
-    points.visible = false;
-    this.cakeGroup.add(points);
-
-    this.spiralRibbon = { points, geo, mat, meta, count };
-  }
-
   // 点蜡烛瞬间的烟花泉涌爆破与金色扩散光环
   _buildIgnitionSparklerBurst() {
     const count = 210;
@@ -1102,16 +1047,15 @@ export class BirthdayScene {
       const a = Math.random() * Math.PI * 2;
       const radialSpeed = 0.55 + Math.random() * 2.05;
       const upSpeed = 1.25 + Math.random() * 2.05;
-      const swirlTangent = 0.75 + Math.random() * 0.65;
 
       pos[i * 3] = Math.cos(a) * 0.04;
       pos[i * 3 + 1] = 1.48;
       pos[i * 3 + 2] = Math.sin(a) * 0.04;
       rev[i] = 0;
 
-      b.velocities[i].x = Math.cos(a) * radialSpeed - Math.sin(a) * swirlTangent;
+      b.velocities[i].x = Math.cos(a) * radialSpeed;
       b.velocities[i].y = upSpeed;
-      b.velocities[i].z = Math.sin(a) * radialSpeed + Math.cos(a) * swirlTangent;
+      b.velocities[i].z = Math.sin(a) * radialSpeed;
       b.velocities[i].life = 1.65 + Math.random() * 0.65;
       b.velocities[i].delay = Math.random() * 0.22;
     }
@@ -1163,13 +1107,12 @@ export class BirthdayScene {
 
         const homeR = Math.hypot(homeX, homeZ);
         const homeAngle = Math.atan2(homeZ, homeX);
-        const startA = homeAngle - (2.2 + Math.random() * 2.0);
         const startR = onCakeOnly ? 0.14 : 0.18 + Math.random() * 0.65;
         const startY = onCakeOnly ? 0.10 + Math.random() * 0.78 : 0.14 + Math.random() * 1.25;
 
-        positions[i * 3] = Math.cos(startA) * startR;
+        positions[i * 3] = Math.cos(homeAngle) * startR;
         positions[i * 3 + 1] = startY;
-        positions[i * 3 + 2] = Math.sin(startA) * startR;
+        positions[i * 3 + 2] = Math.sin(homeAngle) * startR;
 
         const c = palette[Math.floor(Math.random() * palette.length)];
         colors[i * 3] = c.r;
@@ -1181,7 +1124,7 @@ export class BirthdayScene {
         speeds[i] = speedMin + Math.random() * (speedMax - speedMin);
         reveals[i] = 0;
 
-        // 靠近蛋糕中心/下方先散开，外围顺势接力绽放
+        // 靠近蛋糕中心/下方先散开，外围顺势接力如烟花般向上升起散开（不带旋转）
         const distNorm = clamp(homeR / 3.8, 0, 1);
         const delay = onCakeOnly
           ? Math.random() * 0.55
@@ -1195,7 +1138,6 @@ export class BirthdayScene {
           homeAngle,
           startR,
           startY,
-          swirlTwist: 2.2 + Math.random() * 2.2,
           delay,
           bloomDur: onCakeOnly ? 1.15 : 1.55 + Math.random() * 0.35,
           y: homeY,
@@ -1370,6 +1312,21 @@ export class BirthdayScene {
     });
   }
 
+  _applyCameraViewOffset() {
+    const width = this.container.clientWidth || window.innerWidth;
+    const height = this.container.clientHeight || window.innerHeight;
+    if (Math.abs(this.viewOffsetNormX) > 0.001) {
+      this.camera.setViewOffset(width, height, -Math.round(width * this.viewOffsetNormX), 0, width, height);
+    } else {
+      this.camera.clearViewOffset();
+    }
+  }
+
+  setHorizontalOffset(normX = 0) {
+    this.viewOffsetNormX = normX;
+    this._applyCameraViewOffset();
+  }
+
   _bindEvents() {
     this._onResize = () => {
       if (this.disposed) return;
@@ -1377,13 +1334,13 @@ export class BirthdayScene {
       const height = this.container.clientHeight || window.innerHeight;
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
+      this._applyCameraViewOffset();
       this.renderer.setSize(width, height);
       this.composer.setSize(width, height);
       this.bloomPass.setSize(width, height);
       const pr = Math.min(window.devicePixelRatio || 1, 2);
       if (this.cakePixelMat) this.cakePixelMat.uniforms.uPixelRatio.value = pr;
       if (this.cakeFlareMat) this.cakeFlareMat.uniforms.uPixelRatio.value = pr;
-      if (this.spiralRibbon) this.spiralRibbon.mat.uniforms.uPixelRatio.value = pr;
       if (this.igniteBurst) this.igniteBurst.mat.uniforms.uPixelRatio.value = pr;
       for (const layer of this.sparkleLayers) {
         layer.mat.uniforms.uPixelRatio.value = pr;
@@ -1486,42 +1443,6 @@ export class BirthdayScene {
     this.blowIntensity = Math.min(1, Math.max(0, val));
   }
 
-  _updateSpiralRibbons() {
-    const rb = this.spiralRibbon;
-    const active = this.state !== 'intro' && this.igniteElapsed > 0.01;
-    rb.points.visible = active;
-    if (!active) return;
-
-    rb.mat.uniforms.uTime.value = this.elapsed;
-    rb.mat.uniforms.uOpacity.value = this.state === 'blown' ? 0.48 : 0.92;
-
-    const pos = rb.geo.attributes.position.array;
-    const rev = rb.geo.attributes.aReveal.array;
-
-    // 彩带从底座盘旋扫掠至外罩顶端的渐显前沿
-    const revealFront = clamp((this.igniteElapsed - 0.04) / 1.55, 0, 1);
-
-    for (let i = 0; i < rb.count; i += 1) {
-      const m = rb.meta[i];
-      // 持续沿着螺旋线缓缓向上流动，并通过两端渐隐包络消除循环接缝
-      const flowU = (m.u + this.igniteElapsed * 0.075) % 1.0;
-      const radius = 0.88 + Math.pow(flowU, 0.78) * 1.24 + m.jitterR;
-      const angle = m.arm * Math.PI + flowU * Math.PI * 4.8 + this.igniteElapsed * 0.55 + m.jitterA;
-      const y = 0.06 + flowU * 2.86 + m.jitterY;
-
-      pos[i * 3] = Math.cos(angle) * radius;
-      pos[i * 3 + 1] = y;
-      pos[i * 3 + 2] = Math.sin(angle) * radius;
-
-      const sweepMask = smoothstep(m.u - 0.14, m.u + 0.02, revealFront * 1.16);
-      const endEnvelope = Math.sin(flowU * Math.PI);
-      rev[i] = sweepMask * clamp(endEnvelope * 1.45, 0, 1);
-    }
-
-    rb.geo.attributes.position.needsUpdate = true;
-    rb.geo.attributes.aReveal.needsUpdate = true;
-  }
-
   _updateIgnitionBurst(dt) {
     const b = this.igniteBurst;
     if (!b.active) return;
@@ -1603,16 +1524,15 @@ export class BirthdayScene {
 
       const p = clamp(localT / m.bloomDur, 0, 1);
       if (p < 1) {
-        // 旋转升起散开阶段：从蛋糕附近旋风式划出优美弧线飘散到全屏目标位置
+        // 升起散开阶段：从蛋糕附近向外向高处划出烟花般优雅抛物弧线（不旋转）
         const ease = 1 - Math.pow(1 - p, 3);
         const r = THREE.MathUtils.lerp(m.startR, m.homeR, ease);
-        const angle = m.homeAngle - (1 - ease) * m.swirlTwist;
         const arcLift = Math.sin(ease * Math.PI) * (onCakeOnly ? 0.16 : 0.45);
         const y = THREE.MathUtils.lerp(m.startY, m.homeY, ease) + arcLift;
 
-        pos[i * 3] = Math.cos(angle) * r;
+        pos[i * 3] = Math.cos(m.homeAngle) * r;
         pos[i * 3 + 1] = y;
-        pos[i * 3 + 2] = Math.sin(angle) * r;
+        pos[i * 3 + 2] = Math.sin(m.homeAngle) * r;
         m.y = m.homeY;
         rev[i] = smoothstep(0.0, 0.28, p);
       } else {
@@ -1712,7 +1632,6 @@ export class BirthdayScene {
       this.domeArcMaterials[i].uniforms.uReveal.value = domeReveal;
     }
 
-    this._updateSpiralRibbons();
     this._updateIgnitionBurst(dt);
     for (const layer of this.sparkleLayers) {
       this._updateSparkleLayer(layer, dt, postIgniteOpacity);

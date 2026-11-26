@@ -422,6 +422,7 @@ export class StarlightScene {
     this.targetCamOffset = new THREE.Vector3(0, 1.95, 6.2);
     this.targetLookAt = new THREE.Vector3(0, 1.05, 0);
     this.camTransition = 0;
+    this.viewOffsetNormX = 0;
   }
 
   _initPostProcessing() {
@@ -932,6 +933,21 @@ export class StarlightScene {
     });
   }
 
+  _applyCameraViewOffset() {
+    const width = this.container.clientWidth || window.innerWidth;
+    const height = this.container.clientHeight || window.innerHeight;
+    if (Math.abs(this.viewOffsetNormX) > 0.001) {
+      this.camera.setViewOffset(width, height, -Math.round(width * this.viewOffsetNormX), 0, width, height);
+    } else {
+      this.camera.clearViewOffset();
+    }
+  }
+
+  setHorizontalOffset(normX = 0) {
+    this.viewOffsetNormX = normX;
+    this._applyCameraViewOffset();
+  }
+
   _bindEvents() {
     this._onResize = () => {
       if (this.disposed) return;
@@ -939,6 +955,7 @@ export class StarlightScene {
       const height = this.container.clientHeight || window.innerHeight;
       this.camera.aspect = width / height;
       this.camera.updateProjectionMatrix();
+      this._applyCameraViewOffset();
       this.renderer.setSize(width, height);
       this.composer.setSize(width, height);
       this.bloomPass.setSize(width, height);

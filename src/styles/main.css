@@ -64,6 +64,164 @@ body {
   height: 19px;
 }
 
+.icon-btn.code-btn {
+  right: max(68px, calc(env(safe-area-inset-right) + 68px));
+}
+
+.icon-btn.code-btn.is-active {
+  border-color: rgba(253, 230, 138, 0.52);
+  box-shadow: 0 0 14px rgba(249, 168, 212, 0.24);
+}
+
+/* 真实源码滚动层：竖屏做低干扰透明背景，电脑/横屏做左侧分屏代码流 */
+.code-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 46% 30% at 50% 44%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.14) 56%, rgba(0, 0, 0, 0.95) 90%);
+  mask-image: radial-gradient(ellipse 46% 30% at 50% 44%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.14) 56%, rgba(0, 0, 0, 0.95) 90%);
+  transition: opacity 0.65s ease, visibility 0.65s ease;
+}
+
+body.is-lit .code-panel {
+  opacity: 0.34;
+}
+
+body.code-hidden .code-panel {
+  opacity: 0 !important;
+  visibility: hidden;
+}
+
+.code-header {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 228, 239, 0.78);
+  flex-shrink: 0;
+}
+
+.code-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #f9a8d4;
+  box-shadow: 0 0 8px rgba(249, 168, 212, 0.85);
+}
+
+body.is-lit .code-live-dot {
+  background: #fde68a;
+  box-shadow: 0 0 10px rgba(253, 230, 138, 0.95);
+  animation: pulseStar 1.8s ease-in-out infinite;
+}
+
+.code-scroll-viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px 14px;
+}
+
+.code-track {
+  will-change: transform;
+}
+
+.code-pre {
+  margin: 0;
+  font: inherit;
+  font-size: 10.5px;
+  line-height: 1.56;
+  white-space: pre;
+  color: rgba(248, 236, 245, 0.74);
+}
+
+.code-line {
+  display: flex;
+  gap: 10px;
+}
+
+.tok-ln {
+  user-select: none;
+  color: rgba(200, 175, 210, 0.35);
+  min-width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tok-code {
+  min-width: 0;
+}
+
+.tok-cmt {
+  color: #9e8cb6;
+  font-style: italic;
+}
+
+.tok-kw {
+  color: #f9a8d4;
+}
+
+.tok-str {
+  color: #fde68a;
+}
+
+.tok-num {
+  color: #bae6fd;
+}
+
+.tok-fn {
+  color: #ffe4ef;
+}
+
+@media (min-width: 768px) and (min-aspect-ratio: 11/10) {
+  .code-panel {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: auto;
+    width: min(41vw, 500px);
+    opacity: 0.56;
+    mix-blend-mode: normal;
+    -webkit-mask-image: none;
+    mask-image: none;
+    background: linear-gradient(90deg, rgba(7, 4, 13, 0.86) 0%, rgba(7, 4, 13, 0.68) 78%, rgba(7, 4, 13, 0) 100%);
+  }
+
+  body.is-lit .code-panel {
+    opacity: 0.88;
+  }
+
+  .code-header {
+    display: flex;
+  }
+
+  .code-scroll-viewport {
+    padding: 4px 20px 16px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000000 10%, #000000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000000 10%, #000000 88%, transparent 100%);
+  }
+
+  .code-pre {
+    font-size: 12px;
+    line-height: 1.62;
+  }
+
+  body.code-split-desktop .intro-tap-zone,
+  body.code-split-desktop .celebration-ui {
+    padding-left: min(34vw, 430px);
+  }
+}
+
 /* 第一幕：暗夜点灯沉浸式全屏交互（无边框无卡片） */
 .intro-tap-zone {
   position: fixed;

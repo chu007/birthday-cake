@@ -3,6 +3,7 @@ import { MusicEngine } from './audio/musicEngine.js';
 import { BlowDetector } from './audio/blowDetector.js';
 import { BirthdayScene } from './scene/birthdayScene.js';
 import { StarlightScene } from './scene/starlightScene.js';
+import { CodeBackdropPanel } from './ui/codePanel.js';
 
 const config = loadConfig();
 document.title = config.name === 'You' ? 'Happy Birthday' : `Happy Birthday · ${config.name}`;
@@ -19,6 +20,8 @@ try {
 }
 
 const sceneContainer = document.getElementById('scene-container');
+const codePanelEl = document.getElementById('code-panel');
+const codeToggleBtn = document.getElementById('code-toggle-btn');
 const introOverlay = document.getElementById('intro-overlay');
 const introRecipient = document.getElementById('intro-recipient');
 const muteBtn = document.getElementById('mute-btn');
@@ -94,6 +97,25 @@ scene = new SceneClass(sceneContainer, {
   },
 });
 
+const codePanel = new CodeBackdropPanel(codePanelEl);
+
+function syncLayoutMode() {
+  const showCode = codePanel.isVisible();
+  const isSplit = showCode && window.innerWidth >= 768 && (window.innerWidth / Math.max(1, window.innerHeight)) >= 1.1;
+  document.body.classList.toggle('code-hidden', !showCode);
+  document.body.classList.toggle('code-split-desktop', isSplit);
+  codeToggleBtn.classList.toggle('is-active', showCode);
+  scene.setHorizontalOffset(isSplit ? 0.17 : 0);
+}
+
+syncLayoutMode();
+window.addEventListener('resize', syncLayoutMode);
+
+codeToggleBtn.addEventListener('click', () => {
+  codePanel.setVisible(!codePanel.isVisible());
+  syncLayoutMode();
+});
+
 function updateMuteIcon(isMuted) {
   iconSoundOn.classList.toggle('hidden', isMuted);
   iconSoundOff.classList.toggle('hidden', !isMuted);
@@ -102,9 +124,12 @@ function updateMuteIcon(isMuted) {
 function startCelebration() {
   if (hasStarted) return;
   hasStarted = true;
+  document.body.classList.add('is-lit');
   introOverlay.classList.add('fade-out');
+  codeToggleBtn.classList.remove('hidden');
   muteBtn.classList.remove('hidden');
 
+  codePanel.setRunning(true);
   scene.runAndLight();
   music.playIgniteSparkle();
   music.start();
