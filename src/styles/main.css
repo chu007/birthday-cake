@@ -1,0 +1,395 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #03040a;
+  color: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+  user-select: none;
+}
+
+#scene-container {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  touch-action: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 顶部极简音频开关 */
+.icon-btn {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 30;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 230, 253, 0.25);
+  background: rgba(10, 18, 38, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #e0f2fe;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.icon-btn:hover {
+  border-color: rgba(186, 230, 253, 0.55);
+  background: rgba(15, 28, 58, 0.72);
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+.icon-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* 第一幕：暗夜点灯沉浸式全屏交互（无边框无卡片） */
+.intro-tap-zone {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px max(48px, env(safe-area-inset-bottom));
+  background: radial-gradient(circle at 50% 42%, transparent 25%, rgba(2, 3, 8, 0.42) 100%);
+  transition: opacity 0.7s ease, visibility 0.7s ease;
+  outline: none;
+}
+
+.intro-tap-zone.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.intro-recipient {
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: rgba(254, 243, 199, 0.82);
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(253, 224, 71, 0.35);
+}
+
+.tap-spark-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tap-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(253, 224, 71, 0.55);
+  box-shadow: 0 0 26px rgba(253, 224, 71, 0.45), inset 0 0 14px rgba(186, 230, 253, 0.2);
+  animation: pulseRing 2.2s ease-in-out infinite;
+}
+
+.tap-core {
+  font-size: 20px;
+  line-height: 1;
+  color: #fef3c7;
+  text-shadow: 0 0 16px rgba(253, 224, 71, 0.9), 0 0 28px rgba(56, 189, 248, 0.45);
+  animation: pulseStar 2.2s ease-in-out infinite;
+}
+
+.tap-label {
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  color: #f8fafc;
+  text-shadow: 0 0 14px rgba(186, 230, 253, 0.55);
+}
+
+@keyframes pulseRing {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseStar {
+  0%, 100% {
+    transform: scale(0.94);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* 按钮体系 */
+.glow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+}
+
+.glow-btn:active {
+  transform: scale(0.96);
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  color: #ffffff;
+  border-color: rgba(186, 230, 253, 0.45);
+  box-shadow: 0 0 24px rgba(56, 189, 248, 0.42);
+}
+
+.primary-btn:hover {
+  box-shadow: 0 0 32px rgba(56, 189, 248, 0.65);
+}
+
+.glass-btn {
+  background: rgba(15, 23, 42, 0.56);
+  color: #f0f9ff;
+  border-color: rgba(186, 230, 253, 0.35);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45), 0 0 18px rgba(56, 189, 248, 0.16);
+}
+
+.glass-btn:hover {
+  background: rgba(30, 58, 138, 0.52);
+  border-color: rgba(186, 230, 253, 0.62);
+}
+
+.subtle-btn {
+  background: rgba(15, 23, 42, 0.48);
+  color: rgba(226, 232, 240, 0.9);
+  border-color: rgba(148, 163, 184, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 9px 20px;
+  font-size: 13px;
+}
+
+/* 第二幕：主 HUD */
+.celebration-ui {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 18px max(26px, env(safe-area-inset-bottom));
+  transition: opacity 0.6s ease;
+}
+
+.bottom-hud {
+  width: min(440px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.calligraphy-svg {
+  width: min(340px, 86vw);
+  height: auto;
+  overflow: visible;
+}
+
+.hb-text {
+  font-family: "Segoe Script", "Snell Roundhand", "Apple Chancery", "Brush Script MT", "Lucida Handwriting", cursive;
+  font-size: 46px;
+  font-weight: 500;
+  fill: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.recipient-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(253, 230, 138, 0.28);
+  background: rgba(10, 16, 36, 0.48);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: #fef3c7;
+  text-shadow: 0 0 10px rgba(253, 230, 138, 0.45);
+}
+
+.spark-dot {
+  font-size: 10px;
+  color: #fde68a;
+}
+
+.action-row {
+  margin-top: 2px;
+  display: flex;
+  justify-content: center;
+}
+
+/* 吹气互动条 */
+.wish-active-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.blow-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 16px;
+  background: rgba(10, 18, 38, 0.58);
+  border: 1px solid rgba(186, 230, 253, 0.24);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+#blow-hint-text {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #e0f2fe;
+}
+
+.meter-track {
+  width: 140px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+}
+
+.meter-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #38bdf8, #fde68a);
+  transition: width 0.06s linear;
+}
+
+/* 第三幕：祝福卡片 */
+.wish-card-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(3, 4, 10, 0.34);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: cardFadeIn 0.65s ease forwards;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.wish-card {
+  width: min(390px, 100%);
+  padding: 28px 24px 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(253, 230, 138, 0.32);
+  background: linear-gradient(160deg, rgba(14, 22, 48, 0.84) 0%, rgba(7, 11, 24, 0.9) 100%);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(56, 189, 248, 0.16);
+  text-align: center;
+}
+
+.wish-card-meta {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(186, 230, 253, 0.26);
+  background: rgba(56, 189, 248, 0.1);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #bae6fd;
+  margin-bottom: 16px;
+}
+
+.wish-card-text {
+  margin: 0 0 24px;
+  font-size: 16px;
+  line-height: 1.85;
+  color: #f8fafc;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.15);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.wish-card-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}

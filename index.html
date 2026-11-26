@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#03040a" />
+  <title>Happy Birthday</title>
+  <script src="./config.js"></script>
+  <link rel="stylesheet" href="./src/styles/main.css" />
+</head>
+<body>
+  <div id="scene-container" aria-hidden="true"></div>
+
+  <!-- 顶部极简静音按钮（仅点亮后显示） -->
+  <button id="mute-btn" class="icon-btn hidden" type="button" aria-label="Toggle music">
+    <svg id="icon-sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+    </svg>
+    <svg id="icon-sound-off" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <line x1="23" y1="9" x2="17" y2="15"></line>
+      <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>
+  </button>
+
+  <!-- 第一幕：暗夜点灯沉浸式开场（无卡片弹窗，轻点任意处点亮） -->
+  <section id="intro-overlay" class="intro-tap-zone" role="button" tabindex="0" aria-label="Tap to light candles">
+    <div class="intro-prompt">
+      <div id="intro-recipient" class="intro-recipient">A Birthday Surprise</div>
+      <div class="tap-spark-wrap" aria-hidden="true">
+        <span class="tap-ring"></span>
+        <span class="tap-core">✦</span>
+      </div>
+      <div class="tap-label">Tap to Light</div>
+    </div>
+  </section>
+
+  <!-- 第二幕 & 第三幕：主视觉文字与轻交互栏 -->
+  <main id="celebration-ui" class="celebration-ui hidden">
+    <div class="bottom-hud">
+      <!-- 发光手写体 Happy birthday! + 专属标识 -->
+      <div class="title-block">
+        <svg class="calligraphy-svg" viewBox="0 0 460 96" role="img" aria-label="Happy birthday!">
+          <defs>
+            <linearGradient id="hb-shimmer" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#fef08a" stop-opacity="0.0" />
+              <stop offset="35%" stop-color="#fde68a" stop-opacity="0.85" />
+              <stop offset="65%" stop-color="#a7f3d0" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#67e8f9" stop-opacity="0.0" />
+            </linearGradient>
+            <filter id="hb-glow" x="-15%" y="-25%" width="130%" height="150%">
+              <feGaussianBlur stdDeviation="2.6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- H 字母周围的星芒点缀 -->
+          <path d="M22 18 L24 24 L30 26 L24 28 L22 34 L20 28 L14 26 L20 24 Z" fill="#fffbeb" opacity="0.95" />
+          <circle cx="15" cy="46" r="2.0" fill="#fde68a" opacity="0.88" />
+          <circle cx="42" cy="14" r="1.7" fill="#bae6fd" opacity="0.85" />
+          <text x="235" y="60" text-anchor="middle" filter="url(#hb-glow)" class="hb-text">Happy birthday!</text>
+          <path d="M78 78 Q230 88 392 75" stroke="url(#hb-shimmer)" stroke-width="2.2" fill="none" stroke-linecap="round" />
+        </svg>
+        <div class="recipient-badge">
+          <span class="spark-dot">✦</span>
+          <span id="recipient-label">For You</span>
+          <span class="spark-dot">✦</span>
+        </div>
+      </div>
+
+      <!-- 交互控制区：Make a Wish / Blow or Tap Flame / Relight -->
+      <div id="wish-trigger-area" class="action-row">
+        <button id="wish-btn" class="glow-btn glass-btn" type="button">Make a Wish</button>
+      </div>
+
+      <div id="wish-active-area" class="wish-active-area hidden">
+        <div class="blow-status">
+          <span id="blow-hint-text">Blow or Tap Flame</span>
+          <div class="meter-track" aria-hidden="true">
+            <div id="blow-meter-fill" class="meter-fill"></div>
+          </div>
+        </div>
+        <button id="blow-fallback-btn" class="glow-btn subtle-btn" type="button">Blow Out</button>
+      </div>
+
+      <div id="relight-row" class="action-row hidden">
+        <button id="relight-bottom-btn" class="glow-btn glass-btn" type="button">Relight</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 第三幕结尾：祝福卡片 -->
+  <section id="wish-card-overlay" class="wish-card-overlay hidden" aria-live="polite">
+    <div class="wish-card">
+      <div class="wish-card-meta">
+        <span id="wish-card-tag">For You · 18</span>
+      </div>
+      <p id="wish-card-text" class="wish-card-text"></p>
+      <div class="wish-card-actions">
+        <button id="relight-card-btn" class="glow-btn primary-btn" type="button">Relight</button>
+        <button id="view-cake-btn" class="glow-btn subtle-btn" type="button">View Cake</button>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

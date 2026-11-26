@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#03040a" />
+  <title>定制专属 3D 生日蛋糕</title>
+  <script src="./config.js"></script>
+  <link rel="stylesheet" href="./src/styles/customize.css" />
+</head>
+<body>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <main class="container">
+    <header class="header">
+      <div class="pill">3D Birthday Cake Studio</div>
+      <h1>定制你的专属生日页面</h1>
+      <p class="subtitle">填写名字、年龄数字与祝福语，一键生成可直接在微信 / 手机浏览器点开的专属链接。</p>
+    </header>
+
+    <form id="custom-form" class="card" novalidate>
+      <div class="field-row">
+        <div class="field">
+          <label for="input-name">寿星名字 / 昵称</label>
+          <input id="input-name" type="text" maxlength="32" placeholder="例如：Mia" required />
+        </div>
+        <div class="field field-age">
+          <label for="input-age">蜡烛数字 (1–99)</label>
+          <input id="input-age" type="number" min="1" max="99" step="1" placeholder="18" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="input-wish">吹灭蜡烛后的祝福语</label>
+        <textarea id="input-wish" rows="3" maxlength="300" placeholder="写下想对 TA 说的话..."></textarea>
+      </div>
+
+      <div class="field">
+        <label for="input-music">背景音乐</label>
+        <select id="input-music">
+          <option value="musicbox">内置 · 八音盒《生日快乐》（离线秒开，最推荐）</option>
+          <option value="piano">内置 · 柔情钢琴《生日快乐》</option>
+          <option value="chimes">内置 · 星空风铃《生日快乐》</option>
+          <option value="custom_url">自定义 · 在线音频直链 (.mp3)</option>
+        </select>
+      </div>
+
+      <div id="audio-url-field" class="field hidden">
+        <label for="input-audio-url">音频直链地址 (HTTPS)</label>
+        <input id="input-audio-url" type="url" placeholder="https://example.com/bgm.mp3" />
+        <p class="hint">需要是允许跨域访问的公开 MP3/M4A 链接；若对方手机加载失败会自动回退到内置八音盒。</p>
+      </div>
+
+      <div class="field">
+        <label for="input-local-file">或选择本地 MP3 试听 / 录屏（可选）</label>
+        <input id="input-local-file" type="file" accept="audio/*" />
+        <p class="hint">说明：本地选择的音频仅用于当前浏览器「Preview」试听或你自己录屏，由于没有后端服务器，无法随分享链接发给他人手机。</p>
+      </div>
+
+      <div class="actions">
+        <button id="generate-btn" class="btn primary" type="submit">Generate Link</button>
+        <button id="preview-btn" class="btn secondary" type="button">Preview</button>
+      </div>
+    </form>
+
+    <section id="result-box" class="card result-card hidden" aria-live="polite">
+      <div class="result-header">
+        <span>专属分享链接已生成</span>
+        <span id="copy-toast" class="copy-toast hidden">已复制!</span>
+      </div>
+      <div class="link-row">
+        <input id="generated-url" type="text" readonly />
+        <button id="copy-btn" class="btn primary small" type="button">Copy</button>
+      </div>
+      <p class="hint">提示：本地预览时生成的是 localhost 地址；部署到 GitHub Pages 后，在对应线上 `/customize.html` 生成的链接即可直接发到微信。</p>
+    </section>
+  </main>
+
+  <script type="module" src="./src/customize.js"></script>
+</body>
+</html>
