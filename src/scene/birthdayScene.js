@@ -881,73 +881,16 @@ export class BirthdayScene {
   }
 
   _buildWideAiryArchAbove() {
-    // 5 道渐次向上流淌显现的玫瑰金/香槟金/珠光白柔光外罩细弧边框（点蜡烛前完全隐藏）
+    // 5 道点亮后自下而上流淌显现的断续微光弧线（已彻底移除球形玻璃罩外壳）
     this.domeArcMaterials = [];
     this.domeArcMeshes = [];
 
-    const domeGeo = this._track(new THREE.SphereGeometry(2.26, 64, 42, 0, Math.PI * 2, 0, Math.PI * 0.68));
-    this.domeShellMat = this._track(new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime: { value: 0 },
-        uOpacity: { value: 0 },
-        uReveal: { value: 0 },
-      },
-      vertexShader: /* glsl */ `
-        varying vec3 vNormal;
-        varying vec3 vViewDir;
-        varying vec3 vLocalPos;
-        varying float vWorldY;
-        void main() {
-          vLocalPos = position;
-          vec4 worldPos = modelMatrix * vec4(position, 1.0);
-          vWorldY = worldPos.y;
-          vec4 mvPos = viewMatrix * worldPos;
-          vNormal = normalize(normalMatrix * normal);
-          vViewDir = normalize(-mvPos.xyz);
-          gl_Position = projectionMatrix * mvPos;
-        }
-      `,
-      fragmentShader: /* glsl */ `
-        uniform float uTime;
-        uniform float uOpacity;
-        uniform float uReveal;
-        varying vec3 vNormal;
-        varying vec3 vViewDir;
-        varying vec3 vLocalPos;
-        varying float vWorldY;
-        void main() {
-          float plateFade = smoothstep(0.18, 0.78, vWorldY);
-          float sweepY = -0.15 + uReveal * 4.35;
-          float heightMask = 1.0 - smoothstep(sweepY - 0.55, sweepY + 0.12, vWorldY);
-          float ndv = abs(dot(normalize(vNormal), normalize(vViewDir)));
-          float rim = pow(1.0 - ndv, 18.0);
-
-          float angle = atan(vLocalPos.z, vLocalPos.x);
-          float wisp = smoothstep(-0.15, 0.65, sin(angle * 3.0 + vLocalPos.y * 2.1 + uTime * 0.42));
-          float pulse = 0.74 + 0.26 * sin(uTime * 1.6 + vLocalPos.y * 1.8);
-
-          vec3 col = mix(vec3(1.0, 0.90, 0.96), vec3(1.0, 0.92, 0.68), 0.48);
-          float alpha = rim * plateFade * heightMask * (0.28 + 0.72 * wisp) * 0.54 * pulse * uOpacity;
-          gl_FragColor = vec4(col, alpha);
-        }
-      `,
-    }));
-
-    this.domeShell = new THREE.Mesh(domeGeo, this.domeShellMat);
-    this.domeShell.position.y = 1.45;
-    this.domeShell.visible = false;
-    this.cakeGroup.add(this.domeShell);
-
     const arcSpecs = [
-      { radius: 2.18, centerY: 1.44, rotY: 0.12, freq: 3.0, phase: 0.3, speed: 0.24, color: new THREE.Color(0xffe49e), peakAlpha: 0.76 },
-      { radius: 2.24, centerY: 1.46, rotY: 0.92, freq: 3.5, phase: 1.7, speed: -0.20, color: new THREE.Color(0xfff1f5), peakAlpha: 0.64 },
-      { radius: 2.30, centerY: 1.45, rotY: 1.85, freq: 2.5, phase: 3.1, speed: 0.18, color: new THREE.Color(0xfbcfe8), peakAlpha: 0.58 },
-      { radius: 2.35, centerY: 1.47, rotY: 2.58, freq: 3.0, phase: 4.5, speed: -0.22, color: new THREE.Color(0xfde68a), peakAlpha: 0.54 },
-      { radius: 2.40, centerY: 1.45, rotY: -0.65, freq: 2.5, phase: 5.4, speed: 0.16, color: new THREE.Color(0xffffff), peakAlpha: 0.48 },
+      { radius: 2.16, centerY: 1.44, rotY: 0.12, tiltZ: 0.08, freq: 3.5, phase: 0.3, speed: 0.24, color: new THREE.Color(0xffe49e), peakAlpha: 0.78 },
+      { radius: 2.24, centerY: 1.46, rotY: 0.92, tiltZ: -0.07, freq: 4.0, phase: 1.7, speed: -0.20, color: new THREE.Color(0xfff1f5), peakAlpha: 0.66 },
+      { radius: 2.30, centerY: 1.45, rotY: 1.85, tiltZ: 0.06, freq: 3.0, phase: 3.1, speed: 0.18, color: new THREE.Color(0xfbcfe8), peakAlpha: 0.60 },
+      { radius: 2.36, centerY: 1.47, rotY: 2.58, tiltZ: -0.09, freq: 3.5, phase: 4.5, speed: -0.22, color: new THREE.Color(0xfde68a), peakAlpha: 0.56 },
+      { radius: 2.42, centerY: 1.45, rotY: -0.65, tiltZ: 0.05, freq: 3.0, phase: 5.4, speed: 0.16, color: new THREE.Color(0xffffff), peakAlpha: 0.50 },
     ];
 
     for (const spec of arcSpecs) {
@@ -997,11 +940,11 @@ export class BirthdayScene {
           uniform float uPeak;
           varying vec2 vUv;
           void main() {
-            float endFade = smoothstep(0.0, 0.15, vUv.x) * smoothstep(1.0, 0.85, vUv.x);
+            float endFade = smoothstep(0.0, 0.16, vUv.x) * smoothstep(1.0, 0.84, vUv.x);
             float distFromEnd = min(vUv.x, 1.0 - vUv.x) * 2.0;
             float archSweep = 1.0 - smoothstep(uReveal * 1.18 - 0.18, uReveal * 1.18 + 0.02, distFromEnd);
             float dash = sin(vUv.x * 6.28318 * uFreq + uPhase + uTime * uSpeed);
-            float broken = smoothstep(-0.12, 0.58, dash);
+            float broken = smoothstep(0.08, 0.65, dash);
             float shimmer = 0.78 + 0.22 * sin(uTime * 1.9 + uPhase);
             float alpha = endFade * archSweep * broken * uPeak * shimmer * uOpacity;
             gl_FragColor = vec4(uColor, alpha);
@@ -1011,6 +954,7 @@ export class BirthdayScene {
 
       const mesh = new THREE.Mesh(tubeGeo, arcMat);
       mesh.rotation.y = spec.rotY;
+      mesh.rotation.z = spec.tiltZ;
       mesh.visible = false;
       this.cakeGroup.add(mesh);
       this.domeArcMaterials.push(arcMat);
@@ -1759,14 +1703,10 @@ export class BirthdayScene {
     this.cakeFlareMat.uniforms.uTime.value = this.elapsed;
     this.cakeFlareMat.uniforms.uOpacity.value = THREE.MathUtils.lerp(0.42, 0.98, easeLight);
 
-    // 外罩柔光细弧自底座渐次向上描绘显现（未点亮时彻底隐藏）
-    const domeVisible = this.state !== 'intro' && domeReveal > 0.005;
-    this.domeShell.visible = domeVisible;
-    this.domeShellMat.uniforms.uTime.value = this.elapsed;
-    this.domeShellMat.uniforms.uOpacity.value = postIgniteOpacity;
-    this.domeShellMat.uniforms.uReveal.value = domeReveal;
+    // 周围断断续续流光弧线自底座渐次向上描绘显现（无球形罩子，未点亮时彻底隐藏）
+    const arcsVisible = this.state !== 'intro' && domeReveal > 0.005;
     for (let i = 0; i < this.domeArcMaterials.length; i += 1) {
-      this.domeArcMeshes[i].visible = domeVisible;
+      this.domeArcMeshes[i].visible = arcsVisible;
       this.domeArcMaterials[i].uniforms.uTime.value = this.elapsed;
       this.domeArcMaterials[i].uniforms.uOpacity.value = postIgniteOpacity;
       this.domeArcMaterials[i].uniforms.uReveal.value = domeReveal;
