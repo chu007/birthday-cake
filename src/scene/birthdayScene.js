@@ -14,8 +14,8 @@ function createParticleDotTexture() {
   const ctx = canvas.getContext('2d');
   const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
   grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
-  grad.addColorStop(0.32, 'rgba(255, 255, 255, 0.85)');
-  grad.addColorStop(0.68, 'rgba(255, 255, 255, 0.22)');
+  grad.addColorStop(0.28, 'rgba(255, 255, 255, 0.85)');
+  grad.addColorStop(0.62, 'rgba(255, 255, 255, 0.18)');
   grad.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
@@ -24,7 +24,7 @@ function createParticleDotTexture() {
   return tex;
 }
 
-// 尖锐精致的四角钻石星芒贴图，营造“亮晶晶”闪烁效果
+// 纤细锐利的针状四角星芒贴图：极细交叉光线 + 微亮针尖核心（拒绝粗钝大菱形）
 function createDiamondGlintTexture() {
   const size = 128;
   const canvas = document.createElement('canvas');
@@ -34,9 +34,9 @@ function createDiamondGlintTexture() {
   const cx = size / 2;
   const cy = size / 2;
 
-  const coreGlow = ctx.createRadialGradient(cx, cy, 1, cx, cy, size * 0.36);
+  const coreGlow = ctx.createRadialGradient(cx, cy, 0.5, cx, cy, size * 0.20);
   coreGlow.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
-  coreGlow.addColorStop(0.25, 'rgba(255, 248, 225, 0.68)');
+  coreGlow.addColorStop(0.35, 'rgba(255, 248, 228, 0.65)');
   coreGlow.addColorStop(1.0, 'rgba(255, 240, 200, 0.0)');
   ctx.fillStyle = coreGlow;
   ctx.fillRect(0, 0, size, size);
@@ -44,8 +44,8 @@ function createDiamondGlintTexture() {
   ctx.save();
   ctx.translate(cx, cy);
   ctx.beginPath();
-  const longR = size * 0.47;
-  const innerR = size * 0.048;
+  const longR = size * 0.48;
+  const innerR = size * 0.022;
   for (let i = 0; i < 8; i += 1) {
     const r = i % 2 === 0 ? longR : innerR;
     const a = (i * Math.PI) / 4;
@@ -55,7 +55,7 @@ function createDiamondGlintTexture() {
     else ctx.lineTo(x, y);
   }
   ctx.closePath();
-  ctx.fillStyle = 'rgba(255, 255, 255, 1.0)';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.98)';
   ctx.fill();
   ctx.restore();
 
@@ -73,9 +73,9 @@ function createFivePointStarTexture() {
   const cx = size / 2;
   const cy = size / 2;
 
-  const glow = ctx.createRadialGradient(cx, cy, 2, cx, cy, size * 0.44);
-  glow.addColorStop(0.0, 'rgba(255, 255, 255, 0.72)');
-  glow.addColorStop(0.42, 'rgba(255, 255, 255, 0.16)');
+  const glow = ctx.createRadialGradient(cx, cy, 1, cx, cy, size * 0.36);
+  glow.addColorStop(0.0, 'rgba(255, 255, 255, 0.78)');
+  glow.addColorStop(0.45, 'rgba(255, 255, 255, 0.16)');
   glow.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, size, size);
@@ -83,8 +83,8 @@ function createFivePointStarTexture() {
   ctx.save();
   ctx.translate(cx, cy);
   ctx.beginPath();
-  const outerR = size * 0.34;
-  const innerR = size * 0.14;
+  const outerR = size * 0.33;
+  const innerR = size * 0.135;
   for (let i = 0; i < 10; i += 1) {
     const r = i % 2 === 0 ? outerR : innerR;
     const angle = (i * Math.PI) / 5 - Math.PI / 2;
@@ -103,8 +103,8 @@ function createFivePointStarTexture() {
   return tex;
 }
 
-// 奶白微粉渐变奶油蛋糕侧面贴图（2048x512）：柔和奶油白 -> 底部淡樱粉晕染 + 细碎香槟金箔 + 雅致粉金 happy birthday
-function createCreamCakeSideTextures() {
+// 半透珠光奶白粉渐变蛋糕侧面贴图 + 竖向抹面凹凸纹理（轻盈通透感，不厚重实心）
+function createTranslucentCakeSideTextures() {
   const w = 2048;
   const h = 512;
 
@@ -113,152 +113,202 @@ function createCreamCakeSideTextures() {
   albedoCanvas.height = h;
   const ctx = albedoCanvas.getContext('2d');
 
-  const emissiveCanvas = document.createElement('canvas');
-  emissiveCanvas.width = w;
-  emissiveCanvas.height = h;
-  const ectx = emissiveCanvas.getContext('2d');
+  const bumpCanvas = document.createElement('canvas');
+  bumpCanvas.width = w;
+  bumpCanvas.height = h;
+  const bctx = bumpCanvas.getContext('2d');
 
-  // 奶白主色 + 底部淡淡樱花粉渐变
   const bg = ctx.createLinearGradient(0, 0, 0, h);
   bg.addColorStop(0.0, '#fffdf9');
-  bg.addColorStop(0.55, '#fff7f8');
-  bg.addColorStop(0.84, '#ffe8f0');
-  bg.addColorStop(1.0, '#ffd8e8');
+  bg.addColorStop(0.54, '#fff6f9');
+  bg.addColorStop(0.84, '#ffe5f0');
+  bg.addColorStop(1.0, '#ffd4e6');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, w, h);
 
-  ectx.fillStyle = '#000000';
-  ectx.fillRect(0, 0, w, h);
+  bctx.fillStyle = '#808080';
+  bctx.fillRect(0, 0, w, h);
 
-  // 极轻微的奶油抹面水平纹理，显得真实细腻
-  for (let y = 18; y < h - 18; y += 22) {
-    ctx.fillStyle = `rgba(244, 210, 224, ${0.06 + Math.random() * 0.05})`;
+  // 竖向/斜向轻柔抹刀梳齿暗纹，在光照下有真实奶油肌理
+  for (let x = 0; x < w; x += 16) {
+    const shade = Math.round(128 + Math.sin((x / w) * Math.PI * 128) * 32);
+    bctx.fillStyle = `rgb(${shade},${shade},${shade})`;
+    bctx.fillRect(x, 0, 8, h);
+  }
+  for (let y = 16; y < h - 16; y += 26) {
+    ctx.fillStyle = 'rgba(255, 218, 232, 0.14)';
     ctx.fillRect(0, y, w, 2);
+    bctx.fillStyle = 'rgba(165, 165, 165, 0.25)';
+    bctx.fillRect(0, y, w, 3);
   }
 
-  // 细碎高雅的香槟金箔与珍珠细闪微粒
-  const glitterColors = ['#f5d08a', '#fde68a', '#fbcfe8', '#ffffff'];
-  for (let i = 0; i < 220; i += 1) {
-    const x = Math.random() * w;
-    const y = 24 + Math.random() * (h - 48);
-    const r = 1.6 + Math.random() * 3.8;
-    const col = glitterColors[i % glitterColors.length];
-
-    ctx.save();
-    ctx.globalAlpha = 0.68;
-    ctx.fillStyle = col;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    if (i % 3 === 0) {
-      ectx.save();
-      ectx.globalAlpha = 0.35;
-      ectx.fillStyle = col;
-      ectx.beginPath();
-      ectx.arc(x, y, r * 0.9, 0, Math.PI * 2);
-      ectx.fill();
-      ectx.restore();
-    }
+  // 雅致香槟粉金手写体 "happy birthday"
+  ctx.save();
+  ctx.font = 'italic 500 28px Georgia, "Times New Roman", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(245, 208, 138, 0.6)';
+  ctx.shadowBlur = 4;
+  ctx.fillStyle = 'rgba(210, 152, 168, 0.92)';
+  const reps = 3;
+  for (let i = 0; i < reps; i += 1) {
+    const x = (w / reps) * (i + 0.5);
+    ctx.fillText('happy birthday', x, h * 0.56);
   }
-
-  // 雅致香槟粉金手写体 "happy birthday" 印在蛋糕中下部
-  const drawText = (targetCtx, col, blur) => {
-    targetCtx.save();
-    targetCtx.font = 'italic 500 30px Georgia, "Times New Roman", serif';
-    targetCtx.textAlign = 'center';
-    targetCtx.textBaseline = 'middle';
-    if (blur > 0) {
-      targetCtx.shadowColor = 'rgba(245, 208, 138, 0.75)';
-      targetCtx.shadowBlur = blur;
-    }
-    targetCtx.fillStyle = col;
-    const reps = 3;
-    for (let i = 0; i < reps; i += 1) {
-      const x = (w / reps) * (i + 0.5);
-      targetCtx.fillText('happy birthday', x, h * 0.58);
-    }
-    targetCtx.restore();
-  };
-  drawText(ctx, 'rgba(196, 138, 152, 0.88)', 4);
-  drawText(ectx, 'rgba(245, 208, 138, 0.25)', 6);
+  ctx.restore();
 
   const map = new THREE.CanvasTexture(albedoCanvas);
   map.wrapS = THREE.RepeatWrapping;
   map.colorSpace = THREE.SRGBColorSpace;
 
-  const emissiveMap = new THREE.CanvasTexture(emissiveCanvas);
-  emissiveMap.wrapS = THREE.RepeatWrapping;
-  emissiveMap.colorSpace = THREE.SRGBColorSpace;
+  const bumpMap = new THREE.CanvasTexture(bumpCanvas);
+  bumpMap.wrapS = THREE.RepeatWrapping;
 
-  return { map, emissiveMap };
+  return { map, bumpMap };
 }
 
-// 奶白奶油抹面顶盘贴图（1024x1024）：细腻螺旋抹面纹理 + 中心淡粉暖光
-function createCreamTopTexture() {
+// 奶白螺旋抹面顶盘贴图 + 螺旋凹凸纹
+function createCreamTopTextures() {
   const size = 1024;
   const cx = size / 2;
   const cy = size / 2;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
+
+  const albedoCanvas = document.createElement('canvas');
+  albedoCanvas.width = size;
+  albedoCanvas.height = size;
+  const ctx = albedoCanvas.getContext('2d');
+
+  const bumpCanvas = document.createElement('canvas');
+  bumpCanvas.width = size;
+  bumpCanvas.height = size;
+  const bctx = bumpCanvas.getContext('2d');
 
   const grad = ctx.createRadialGradient(cx, cy, 18, cx, cy, size * 0.5);
   grad.addColorStop(0.0, '#fffdf9');
-  grad.addColorStop(0.6, '#fff8f6');
-  grad.addColorStop(0.9, '#ffeff4');
-  grad.addColorStop(1.0, '#ffe3ee');
+  grad.addColorStop(0.65, '#fff7f7');
+  grad.addColorStop(0.92, '#ffecf3');
+  grad.addColorStop(1.0, '#ffe0ed');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
 
-  // 同心细腻奶油抹刀旋纹
-  for (let r = 45; r < size * 0.46; r += 26) {
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(244, 212, 224, 0.28)';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-  }
+  bctx.fillStyle = '#808080';
+  bctx.fillRect(0, 0, size, size);
 
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
+  // 阿基米德螺旋抹面奶油纹理
+  ctx.beginPath();
+  bctx.beginPath();
+  const turns = 11;
+  const steps = turns * 80;
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    const angle = t * turns * Math.PI * 2;
+    const r = 18 + t * (size * 0.43);
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    if (i === 0) {
+      ctx.moveTo(x, y);
+      bctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+      bctx.lineTo(x, y);
+    }
+  }
+  ctx.strokeStyle = 'rgba(244, 212, 224, 0.36)';
+  ctx.lineWidth = 5;
+  ctx.stroke();
+
+  bctx.strokeStyle = 'rgba(235, 235, 235, 0.85)';
+  bctx.lineWidth = 10;
+  bctx.stroke();
+
+  const map = new THREE.CanvasTexture(albedoCanvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  const bumpMap = new THREE.CanvasTexture(bumpCanvas);
+
+  return { map, bumpMap };
 }
 
-// 构造星形花嘴挤出的 3D 立体奶油裱花花朵几何体（带 7 瓣花纹褶皱与螺旋尖顶）
-function createWhippedRosetteGeometry(outerR = 0.085, height = 0.115) {
-  const geo = new THREE.CylinderGeometry(0.008, outerR, height, 28, 12, false);
-  const pos = geo.attributes.position;
-  for (let i = 0; i < pos.count; i += 1) {
-    const x = pos.getX(i);
-    const y = pos.getY(i);
-    const z = pos.getZ(i);
-    const r = Math.hypot(x, z);
-    if (r < 0.002) continue;
+// 连续花边裱花条纹理：沿 TubeGeometry 的 uv.y（截面圆周）挤出 12 道星形花嘴棱纹 + 细腻明暗沟槽
+function createPipingStripeTexture(tintHex = '#fffdf9', grooveHex = '#f5dce6') {
+  const size = 512;
 
-    // 高度归一化 0 (底) .. 1 (顶)，防止浮点误差出现负数导致 Math.pow 返回 NaN
-    const hNorm = Math.min(1, Math.max(0, (y + height / 2) / height));
-    const angle = Math.atan2(z, x);
+  const albedoCanvas = document.createElement('canvas');
+  albedoCanvas.width = size;
+  albedoCanvas.height = size;
+  const ctx = albedoCanvas.getContext('2d');
 
-    // 鼓润饱满的塔身曲线 + 星形裱花花嘴 7 瓣螺旋褶皱
-    const bulge = Math.sin(Math.pow(Math.max(0, 1 - hNorm), 0.65) * Math.PI * 0.88);
-    const fluted = 1 + 0.19 * Math.cos(angle * 7 + hNorm * 3.8);
-    const targetR = outerR * (0.14 + 0.92 * bulge) * fluted * (1 - 0.58 * Math.pow(hNorm, 1.5));
+  const bumpCanvas = document.createElement('canvas');
+  bumpCanvas.width = size;
+  bumpCanvas.height = size;
+  const bctx = bumpCanvas.getContext('2d');
 
-    const scale = targetR / r;
-    pos.setX(i, x * scale);
-    pos.setZ(i, z * scale);
-    // 顶部略微弯曲成奶油小尖
-    pos.setY(i, y + height / 2);
+  ctx.fillStyle = tintHex;
+  ctx.fillRect(0, 0, size, size);
+
+  bctx.fillStyle = '#808080';
+  bctx.fillRect(0, 0, size, size);
+
+  // 沿纵向 y 绘制 12 条高对比星形花嘴条纹
+  const flutes = 12;
+  const bandH = size / flutes;
+  for (let i = 0; i < flutes; i += 1) {
+    const y0 = i * bandH;
+    const g = ctx.createLinearGradient(0, y0, 0, y0 + bandH);
+    g.addColorStop(0.0, grooveHex);
+    g.addColorStop(0.28, tintHex);
+    g.addColorStop(0.5, '#ffffff');
+    g.addColorStop(0.72, tintHex);
+    g.addColorStop(1.0, grooveHex);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, y0, size, bandH + 1);
+
+    const bg = bctx.createLinearGradient(0, y0, 0, y0 + bandH);
+    bg.addColorStop(0.0, '#1e1e1e');
+    bg.addColorStop(0.32, '#dcdcdc');
+    bg.addColorStop(0.5, '#ffffff');
+    bg.addColorStop(0.68, '#dcdcdc');
+    bg.addColorStop(1.0, '#1e1e1e');
+    bctx.fillStyle = bg;
+    bctx.fillRect(0, y0, size, bandH + 1);
   }
-  geo.computeVertexNormals();
-  return geo;
+
+  const map = new THREE.CanvasTexture(albedoCanvas);
+  map.wrapS = THREE.RepeatWrapping;
+  map.wrapT = THREE.RepeatWrapping;
+  map.colorSpace = THREE.SRGBColorSpace;
+
+  const bumpMap = new THREE.CanvasTexture(bumpCanvas);
+  bumpMap.wrapS = THREE.RepeatWrapping;
+  bumpMap.wrapT = THREE.RepeatWrapping;
+
+  return { map, bumpMap };
 }
 
-// 亮晶晶闪烁粒子 Custom Shader（支持每颗粒子独立闪烁相位与速度，点亮后才绽放）
-function createTwinklePointsMaterial(texture) {
+// 构造连续波浪褶皱奶油花边管道（一条无缝连续的法式奶油裱花环，彻底告别“分开的几坨”）
+function createContinuousRuffledPipingGeometry({
+  radius = 0.72,
+  baseY = 0.84,
+  waves = 22,
+  radialAmp = 0.042,
+  verticalAmp = 0.024,
+  tubeRadius = 0.056,
+  tubularSegments = 240,
+}) {
+  const pts = [];
+  const totalSamples = waves * 8;
+  for (let i = 0; i < totalSamples; i += 1) {
+    const t = i / totalSamples;
+    const theta = t * Math.PI * 2;
+    const r = radius + Math.sin(theta * waves) * radialAmp;
+    const y = baseY + Math.cos(theta * waves) * verticalAmp;
+    pts.push(new THREE.Vector3(Math.cos(theta) * r, y, Math.sin(theta) * r));
+  }
+  const curve = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.5);
+  return new THREE.TubeGeometry(curve, tubularSegments, tubeRadius, 16, true);
+}
+
+// 亮晶晶闪烁粒子 Custom Shader（按设备 DPR 限制最大像素尺寸，保持精致细腻绝不变大粗点）
+function createTwinklePointsMaterial(texture, maxCssPx = 12.0) {
   return new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -267,6 +317,7 @@ function createTwinklePointsMaterial(texture) {
       uTime: { value: 0 },
       uOpacity: { value: 0 },
       uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 2) },
+      uMaxPx: { value: maxCssPx },
       uMap: { value: texture },
     },
     vertexShader: /* glsl */ `
@@ -277,6 +328,7 @@ function createTwinklePointsMaterial(texture) {
 
       uniform float uTime;
       uniform float uPixelRatio;
+      uniform float uMaxPx;
 
       varying vec3 vColor;
       varying float vTwinkle;
@@ -284,10 +336,11 @@ function createTwinklePointsMaterial(texture) {
       void main() {
         vColor = aColor;
         float wave = 0.5 + 0.5 * sin(uTime * aSpeed + aPhase);
-        vTwinkle = 0.38 + 0.62 * pow(wave, 2.2);
+        vTwinkle = 0.34 + 0.66 * pow(wave, 2.4);
 
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-        gl_PointSize = aSize * uPixelRatio * (860.0 / max(1.5, -mvPosition.z)) * (0.75 + 0.55 * vTwinkle);
+        float rawSize = aSize * uPixelRatio * (460.0 / max(2.0, -mvPosition.z)) * (0.76 + 0.44 * vTwinkle);
+        gl_PointSize = min(uMaxPx * uPixelRatio, rawSize);
         gl_Position = projectionMatrix * mvPosition;
       }
     `,
@@ -302,7 +355,7 @@ function createTwinklePointsMaterial(texture) {
         vec4 tex = texture2D(uMap, gl_PointCoord);
         float alpha = tex.a * vTwinkle * uOpacity;
         if (alpha < 0.01) discard;
-        gl_FragColor = vec4(vColor * tex.rgb * (1.35 + 0.75 * vTwinkle), alpha);
+        gl_FragColor = vec4(vColor * tex.rgb * (1.65 + 1.15 * vTwinkle), alpha);
       }
     `,
   });
@@ -326,17 +379,18 @@ export class BirthdayScene {
     this.dotTex = createParticleDotTexture();
     this.glintTex = createDiamondGlintTexture();
     this.starTex = createFivePointStarTexture();
-    this.sideTextures = createCreamCakeSideTextures();
-    this.topTex = createCreamTopTexture();
+    this.sideTextures = createTranslucentCakeSideTextures();
+    this.topTextures = createCreamTopTextures();
+    this.whitePipingTex = createPipingStripeTexture('#fffdf9', '#edd0dc');
+    this.blushPipingTex = createPipingStripeTexture('#fff3f7', '#ecc0d2');
 
     this._initRenderer();
     this._initScene();
     this._initPostProcessing();
     this._buildBackdropStars();
-    this._buildFlatTrayAndCreamCake();
-    this._buildWideAiryArchAbove();
+    this._buildAiryTrayAndLuminousCake();
     this._buildCandles();
-    this._buildFreeSparkles();
+    this._buildPostIgniteSparkles();
     this._buildFireworks();
     this._bindEvents();
     this._updateCameraFraming();
@@ -375,16 +429,16 @@ export class BirthdayScene {
     const height = this.container.clientHeight || window.innerHeight;
 
     this.camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 70);
-    this.camera.position.set(0, 2.25, 7.2);
+    this.camera.position.set(0, 1.95, 5.6);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.06;
     this.controls.enablePan = false;
-    this.controls.minDistance = 3.8;
-    this.controls.maxDistance = 18.0;
-    this.controls.minPolarAngle = Math.PI * 0.22;
-    this.controls.maxPolarAngle = Math.PI * 0.49;
+    this.controls.minDistance = 3.2;
+    this.controls.maxDistance = 14.0;
+    this.controls.minPolarAngle = Math.PI * 0.20;
+    this.controls.maxPolarAngle = Math.PI * 0.48;
     this.controls.autoRotate = true;
     this.controls.autoRotateSpeed = 0.42;
 
@@ -396,23 +450,23 @@ export class BirthdayScene {
       this.userDragging = false;
     });
 
-    // 柔暖奶油棚拍布光：凸显白色奶油裱花的立体起伏阴影，不过曝死白
-    this.ambient = new THREE.AmbientLight(0xfff0f5, 0.72);
+    // 多角度柔暖布光，让连续奶油裱花的星形条纹清晰立体
+    this.ambient = new THREE.AmbientLight(0xfff0f5, 0.68);
     this.scene.add(this.ambient);
 
-    this.keyLight = new THREE.DirectionalLight(0xfffaf0, 1.05);
-    this.keyLight.position.set(3.2, 4.8, 3.8);
+    this.keyLight = new THREE.DirectionalLight(0xfffaf0, 1.12);
+    this.keyLight.position.set(3.4, 4.6, 3.6);
     this.scene.add(this.keyLight);
 
-    this.rimLight = new THREE.DirectionalLight(0xffd6e7, 0.75);
-    this.rimLight.position.set(-3.4, 3.6, -2.8);
+    this.rimLight = new THREE.DirectionalLight(0xffd6e7, 0.85);
+    this.rimLight.position.set(-3.4, 3.4, -2.6);
     this.scene.add(this.rimLight);
 
     this.cakeGroup = new THREE.Group();
     this.scene.add(this.cakeGroup);
 
-    this.targetCamOffset = new THREE.Vector3(0, 2.25, 7.2);
-    this.targetLookAt = new THREE.Vector3(0, 0.85, 0);
+    this.targetCamOffset = new THREE.Vector3(0, 1.95, 5.6);
+    this.targetLookAt = new THREE.Vector3(0, 0.56, 0);
     this.camTransition = 0;
   }
 
@@ -424,19 +478,18 @@ export class BirthdayScene {
     this.renderPass = new RenderPass(this.scene, this.camera);
     this.composer.addPass(this.renderPass);
 
-    // 提高 threshold 至 0.80，让纯白奶油裱花保持细腻立体阴影，而火苗与星芒亮晶晶发光
     this.bloomPass = new UnrealBloomPass(
       new THREE.Vector2(width, height),
-      0.44,
-      0.44,
-      0.80
+      0.42,
+      0.42,
+      0.82
     );
     this.composer.addPass(this.bloomPass);
     this.composer.addPass(new OutputPass());
   }
 
   _buildBackdropStars() {
-    const count = 150;
+    const count = 120;
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const palette = [
@@ -464,11 +517,11 @@ export class BirthdayScene {
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const mat = this._track(new THREE.PointsMaterial({
-      size: 0.065,
+      size: 0.045,
       map: this.dotTex,
       vertexColors: true,
       transparent: true,
-      opacity: 0.1,
+      opacity: 0.06,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
     }));
@@ -476,311 +529,227 @@ export class BirthdayScene {
     this.scene.add(this.bgStars);
   }
 
-  _buildFlatTrayAndCreamCake() {
-    // 1. 简约平底托盘（去掉厚重盘沿立体感，改为扁平珠光白圆托盘 + 细香槟金镶边）
-    const trayGeo = this._track(new THREE.CylinderGeometry(1.30, 1.28, 0.032, 72));
+  _buildAiryTrayAndLuminousCake() {
+    // 1. 轻盈磨砂平底托盘（半透珍珠白，减少厚重实心感 + 细香槟金镶边）
+    const trayGeo = this._track(new THREE.CylinderGeometry(1.26, 1.24, 0.024, 72));
     const trayMat = this._track(new THREE.MeshPhysicalMaterial({
-      color: 0xfff9f7,
-      emissive: 0xfff0f5,
-      emissiveIntensity: 0.08,
-      roughness: 0.28,
+      color: 0xfff8fa,
+      emissive: 0xffeef4,
+      emissiveIntensity: 0.14,
+      transparent: true,
+      opacity: 0.58,
+      roughness: 0.24,
       metalness: 0.04,
-      clearcoat: 0.6,
-      clearcoatRoughness: 0.18,
+      clearcoat: 0.55,
+      clearcoatRoughness: 0.16,
     }));
     this.tray = new THREE.Mesh(trayGeo, trayMat);
-    this.tray.position.y = 0.016;
+    this.tray.position.y = 0.012;
     this.cakeGroup.add(this.tray);
 
-    const trayRimGeo = this._track(new THREE.TorusGeometry(1.30, 0.011, 10, 84));
+    const trayRimGeo = this._track(new THREE.TorusGeometry(1.26, 0.0085, 10, 84));
     const goldMat = this._track(new THREE.MeshStandardMaterial({
       color: 0xf5d08a,
-      emissive: 0x5c4212,
-      emissiveIntensity: 0.22,
+      emissive: 0x6b4d18,
+      emissiveIntensity: 0.25,
       metalness: 0.72,
-      roughness: 0.24,
+      roughness: 0.22,
     }));
     const trayRim = new THREE.Mesh(trayRimGeo, goldMat);
     trayRim.rotation.x = Math.PI / 2;
-    trayRim.position.y = 0.024;
+    trayRim.position.y = 0.018;
     this.cakeGroup.add(trayRim);
 
-    // 2. 小巧雅致的白色奶油蛋糕（radius = 0.80, height = 0.84 -> 更矮更精致）
-    const bodyGeo = this._track(new THREE.CylinderGeometry(0.80, 0.80, 0.84, 72, 1, true));
+    // 2. 通透轻盈的蛋糕体：无底盖半透柔光内芯 + 珠光奶白粉薄纱外衣 + 表面微粒子星纱
+    const innerGlowGeo = this._track(new THREE.CylinderGeometry(0.76, 0.76, 0.78, 48, 1, true));
+    const innerGlowMat = this._track(new THREE.MeshBasicMaterial({
+      color: 0xffedf4,
+      transparent: true,
+      opacity: 0.30,
+      depthWrite: false,
+    }));
+    const innerGlow = new THREE.Mesh(innerGlowGeo, innerGlowMat);
+    innerGlow.position.y = 0.42;
+    this.cakeGroup.add(innerGlow);
+
+    const bodyGeo = this._track(new THREE.CylinderGeometry(0.80, 0.80, 0.80, 72, 1, true));
     const bodyMat = this._track(new THREE.MeshPhysicalMaterial({
       map: this.sideTextures.map,
-      emissive: 0xffffff,
-      emissiveMap: this.sideTextures.emissiveMap,
-      emissiveIntensity: 0.45,
-      roughness: 0.36,
+      bumpMap: this.sideTextures.bumpMap,
+      bumpScale: 0.015,
+      emissive: 0xfff0f6,
+      emissiveIntensity: 0.16,
+      transparent: true,
+      opacity: 0.68,
+      depthWrite: false,
+      roughness: 0.34,
       metalness: 0.02,
-      clearcoat: 0.22,
-      sheen: 0.65,
+      clearcoat: 0.25,
+      sheen: 0.75,
       sheenColor: new THREE.Color(0xffe4ef),
     }));
     const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-    bodyMesh.position.y = 0.452;
+    bodyMesh.position.y = 0.425;
     this.cakeGroup.add(bodyMesh);
 
-    const topGeo = this._track(new THREE.CylinderGeometry(0.79, 0.80, 0.036, 72));
+    // 螺旋纹理奶油顶盘（半透柔润奶油感）
+    const topGeo = this._track(new THREE.CylinderGeometry(0.79, 0.80, 0.032, 72));
     const topMat = this._track(new THREE.MeshPhysicalMaterial({
-      map: this.topTex,
+      map: this.topTextures.map,
+      bumpMap: this.topTextures.bumpMap,
+      bumpScale: 0.026,
+      emissive: 0xfff5f8,
+      emissiveIntensity: 0.14,
+      transparent: true,
+      opacity: 0.86,
       roughness: 0.38,
       metalness: 0.02,
-      clearcoat: 0.18,
-      sheen: 0.55,
-      sheenColor: new THREE.Color(0xfff0f5),
+      sheen: 0.65,
+      sheenColor: new THREE.Color(0xffffff),
     }));
     const topDisk = new THREE.Mesh(topGeo, topMat);
-    topDisk.position.y = 0.875;
+    topDisk.position.y = 0.835;
     this.cakeGroup.add(topDisk);
 
-    // 3. 蛋糕底座一圈交替排列的奶白 / 淡粉 / 香槟金小珍珠围边
-    const pearlColors = [0xfffaf7, 0xfbcfe8, 0xf5d08a];
-    const pearlMats = pearlColors.map((col, idx) =>
-      this._track(new THREE.MeshPhysicalMaterial({
-        color: col,
-        roughness: idx === 2 ? 0.22 : 0.26,
-        metalness: idx === 2 ? 0.58 : 0.06,
-        clearcoat: 0.6,
-      }))
-    );
-    const basePearlGeo = this._track(new THREE.SphereGeometry(0.028, 12, 10));
-    const basePearlCount = 42;
-    for (let i = 0; i < basePearlCount; i += 1) {
-      const a = (i / basePearlCount) * Math.PI * 2;
-      const pearl = new THREE.Mesh(basePearlGeo, pearlMats[i % pearlMats.length]);
-      pearl.position.set(Math.cos(a) * 0.815, 0.055, Math.sin(a) * 0.815);
-      this.cakeGroup.add(pearl);
+    // 3. 蛋糕体表面 2200 颗极细微粒光纱（形成空气感奶油轮廓，彻底告别厚重实心块）
+    const veilCount = 2200;
+    const veilPos = new Float32Array(veilCount * 3);
+    const veilCol = new Float32Array(veilCount * 3);
+    const veilSizes = new Float32Array(veilCount);
+    const veilPhases = new Float32Array(veilCount);
+    const veilSpeeds = new Float32Array(veilCount);
+    const veilPalette = [
+      new THREE.Color(0xffffff),
+      new THREE.Color(0xfff5f8),
+      new THREE.Color(0xffd6e7),
+      new THREE.Color(0xfde68a),
+    ];
+
+    for (let i = 0; i < veilCount; i += 1) {
+      const a = Math.random() * Math.PI * 2;
+      let r;
+      let y;
+      if (i < 1500) {
+        // 筒身竖向微粒褶皱
+        const pleat = Math.sin(a * 32) * 0.008;
+        r = 0.798 + pleat + (Math.random() - 0.5) * 0.018;
+        y = 0.035 + Math.random() * 0.79;
+      } else if (i < 1950) {
+        // 顶缘奶油花边微光粒子
+        r = 0.45 + Math.random() * 0.36;
+        y = 0.83 + Math.random() * 0.045;
+      } else {
+        // 托盘细微光边粒子
+        r = 1.24 + (Math.random() - 0.5) * 0.03;
+        y = 0.02 + Math.random() * 0.015;
+      }
+
+      veilPos[i * 3] = Math.cos(a) * r;
+      veilPos[i * 3 + 1] = y;
+      veilPos[i * 3 + 2] = Math.sin(a) * r;
+
+      const c = veilPalette[i % veilPalette.length];
+      veilCol[i * 3] = c.r;
+      veilCol[i * 3 + 1] = c.g;
+      veilCol[i * 3 + 2] = c.b;
+
+      veilSizes[i] = 0.014 + Math.random() * 0.022;
+      veilPhases[i] = Math.random() * Math.PI * 2;
+      veilSpeeds[i] = 1.2 + Math.random() * 2.2;
     }
 
-    // 4. 蛋糕顶部 3D 立体白色奶油裱花（16 朵星形花嘴外圈花朵 + 8 朵内圈小奶油花 + 细微粉金珍珠点缀）
-    const creamMat = this._track(new THREE.MeshPhysicalMaterial({
+    const veilGeo = this._track(new THREE.BufferGeometry());
+    veilGeo.setAttribute('position', new THREE.BufferAttribute(veilPos, 3));
+    veilGeo.setAttribute('aColor', new THREE.BufferAttribute(veilCol, 3));
+    veilGeo.setAttribute('aSize', new THREE.BufferAttribute(veilSizes, 1));
+    veilGeo.setAttribute('aPhase', new THREE.BufferAttribute(veilPhases, 1));
+    veilGeo.setAttribute('aSpeed', new THREE.BufferAttribute(veilSpeeds, 1));
+
+    this.cakeVeilMat = this._track(createTwinklePointsMaterial(this.dotTex, 3.6));
+    this.cakeVeilPoints = new THREE.Points(veilGeo, this.cakeVeilMat);
+    this.cakeGroup.add(this.cakeVeilPoints);
+
+    // 4. 连续的星形花嘴带纹理白色奶油裱花（一条完整无缝的法式花边环，绝不是分开的一坨坨！）
+    const whitePipingMat = this._track(new THREE.MeshPhysicalMaterial({
+      map: this.whitePipingTex.map,
+      bumpMap: this.whitePipingTex.bumpMap,
+      bumpScale: 0.032,
       color: 0xfffdfb,
-      emissive: 0xffeef4,
-      emissiveIntensity: 0.08,
+      emissive: 0xfff0f6,
+      emissiveIntensity: 0.12,
+      transparent: true,
+      opacity: 0.92,
       roughness: 0.42,
       metalness: 0.01,
-      sheen: 0.6,
-      sheenColor: new THREE.Color(0xfff5f8),
+      sheen: 0.65,
+      sheenColor: new THREE.Color(0xffffff),
     }));
-    const blushCreamMat = this._track(new THREE.MeshPhysicalMaterial({
-      color: 0xfff0f6,
+
+    const blushPipingMat = this._track(new THREE.MeshPhysicalMaterial({
+      map: this.blushPipingTex.map,
+      bumpMap: this.blushPipingTex.bumpMap,
+      bumpScale: 0.028,
+      color: 0xfff4f8,
       emissive: 0xffd6e7,
-      emissiveIntensity: 0.07,
+      emissiveIntensity: 0.10,
+      transparent: true,
+      opacity: 0.90,
       roughness: 0.42,
       metalness: 0.01,
-      sheen: 0.6,
+      sheen: 0.65,
       sheenColor: new THREE.Color(0xffd6e7),
     }));
 
-    const outerRosetteGeo = this._track(createWhippedRosetteGeometry(0.095, 0.118));
-    const innerRosetteGeo = this._track(createWhippedRosetteGeometry(0.066, 0.082));
-    const tinyPearlGeo = this._track(new THREE.SphereGeometry(0.020, 10, 10));
-
-    // 外圈 16 朵饱满白色奶油裱花，花谷间点缀小颗香槟金与淡粉珍珠
-    const outerCount = 16;
-    for (let i = 0; i < outerCount; i += 1) {
-      const a = (i / outerCount) * Math.PI * 2;
-      const rosette = new THREE.Mesh(outerRosetteGeo, creamMat);
-      rosette.position.set(Math.cos(a) * 0.66, 0.885, Math.sin(a) * 0.66);
-      rosette.rotation.y = a + i * 0.5;
-      this.cakeGroup.add(rosette);
-
-      const valleyAngle = a + Math.PI / outerCount;
-      const pearl = new THREE.Mesh(tinyPearlGeo, pearlMats[(i % 2) + 1]);
-      pearl.position.set(Math.cos(valleyAngle) * 0.68, 0.905, Math.sin(valleyAngle) * 0.68);
-      this.cakeGroup.add(pearl);
-    }
-
-    // 内圈 8 朵雅致淡粉白奶油小花，环绕中央蜡烛
-    const innerCount = 8;
-    for (let i = 0; i < innerCount; i += 1) {
-      const a = (i / innerCount) * Math.PI * 2 + 0.2;
-      const puff = new THREE.Mesh(innerRosetteGeo, i % 2 === 0 ? blushCreamMat : creamMat);
-      puff.position.set(Math.cos(a) * 0.45, 0.885, Math.sin(a) * 0.45);
-      puff.rotation.y = -a;
-      this.cakeGroup.add(puff);
-    }
-
-    // 5. 正侧面一朵精致的淡粉色缎带蝴蝶结（法式奶油蛋糕轻奢点睛）
-    const bowGroup = new THREE.Group();
-    bowGroup.position.set(0.32, 0.64, 0.745);
-    bowGroup.rotation.y = 0.42;
-    const bowMat = this._track(new THREE.MeshPhysicalMaterial({
-      color: 0xffd2e3,
-      roughness: 0.34,
-      metalness: 0.05,
-      sheen: 0.75,
-      sheenColor: new THREE.Color(0xffffff),
+    // 顶部外圈连续波浪花边奶油裱花环
+    const outerLaceGeo = this._track(createContinuousRuffledPipingGeometry({
+      radius: 0.71,
+      baseY: 0.858,
+      waves: 22,
+      radialAmp: 0.044,
+      verticalAmp: 0.022,
+      tubeRadius: 0.056,
+      tubularSegments: 240,
     }));
-    const loopGeo = this._track(new THREE.TorusGeometry(0.052, 0.017, 10, 22));
-    const leftLoop = new THREE.Mesh(loopGeo, bowMat);
-    leftLoop.position.set(-0.045, 0.01, 0);
-    leftLoop.scale.set(1.2, 0.72, 0.6);
-    leftLoop.rotation.z = 0.25;
-    bowGroup.add(leftLoop);
+    const outerLace = new THREE.Mesh(outerLaceGeo, whitePipingMat);
+    this.cakeGroup.add(outerLace);
 
-    const rightLoop = new THREE.Mesh(loopGeo, bowMat);
-    rightLoop.position.set(0.045, 0.01, 0);
-    rightLoop.scale.set(1.2, 0.72, 0.6);
-    rightLoop.rotation.z = -0.25;
-    bowGroup.add(rightLoop);
-
-    const knotGeo = this._track(new THREE.SphereGeometry(0.022, 10, 10));
-    const knot = new THREE.Mesh(knotGeo, bowMat);
-    bowGroup.add(knot);
-
-    const tailGeo = this._track(new THREE.CylinderGeometry(0.012, 0.018, 0.14, 8));
-    const leftTail = new THREE.Mesh(tailGeo, bowMat);
-    leftTail.scale.set(1, 1, 0.35);
-    leftTail.position.set(-0.032, -0.068, 0.005);
-    leftTail.rotation.z = -0.26;
-    bowGroup.add(leftTail);
-
-    const rightTail = new THREE.Mesh(tailGeo, bowMat);
-    rightTail.scale.set(1, 1, 0.35);
-    rightTail.position.set(0.032, -0.068, 0.005);
-    rightTail.rotation.z = 0.26;
-    bowGroup.add(rightTail);
-
-    this.cakeGroup.add(bowGroup);
-  }
-
-  _buildWideAiryArchAbove() {
-    // 显著拉高、拉大（半径 2.22..2.38，远大于 1.30 平底托盘），断续若隐若现的白金粉微光细弧
-    this.domeArcMaterials = [];
-
-    const domeGeo = this._track(new THREE.SphereGeometry(2.26, 64, 42, 0, Math.PI * 2, 0, Math.PI * 0.68));
-    this.domeShellMat = this._track(new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      side: THREE.BackSide,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime: { value: 0 },
-        uOpacity: { value: 0 },
-      },
-      vertexShader: /* glsl */ `
-        varying vec3 vNormal;
-        varying vec3 vViewDir;
-        varying vec3 vLocalPos;
-        varying float vWorldY;
-        void main() {
-          vLocalPos = position;
-          vec4 worldPos = modelMatrix * vec4(position, 1.0);
-          vWorldY = worldPos.y;
-          vec4 mvPos = viewMatrix * worldPos;
-          vNormal = normalize(normalMatrix * normal);
-          vViewDir = normalize(-mvPos.xyz);
-          gl_Position = projectionMatrix * mvPos;
-        }
-      `,
-      fragmentShader: /* glsl */ `
-        uniform float uTime;
-        uniform float uOpacity;
-        varying vec3 vNormal;
-        varying vec3 vViewDir;
-        varying vec3 vLocalPos;
-        varying float vWorldY;
-        void main() {
-          float plateFade = smoothstep(0.18, 0.78, vWorldY);
-          float ndv = abs(dot(normalize(vNormal), normalize(vViewDir)));
-          float rim = pow(1.0 - ndv, 18.0);
-
-          float angle = atan(vLocalPos.z, vLocalPos.x);
-          float wisp = smoothstep(-0.15, 0.65, sin(angle * 3.0 + vLocalPos.y * 2.1 + uTime * 0.35));
-          float pulse = 0.72 + 0.28 * sin(uTime * 1.4 + vLocalPos.y * 1.8);
-
-          vec3 col = mix(vec3(1.0, 0.94, 0.96), vec3(0.99, 0.90, 0.68), 0.45);
-          float alpha = rim * plateFade * (0.25 + 0.75 * wisp) * 0.48 * pulse * uOpacity;
-          gl_FragColor = vec4(col, alpha);
-        }
-      `,
+    // 顶部内圈精致淡粉白细纹奶油波浪环
+    const innerLaceGeo = this._track(createContinuousRuffledPipingGeometry({
+      radius: 0.51,
+      baseY: 0.850,
+      waves: 16,
+      radialAmp: 0.032,
+      verticalAmp: 0.016,
+      tubeRadius: 0.036,
+      tubularSegments: 192,
     }));
+    const innerLace = new THREE.Mesh(innerLaceGeo, blushPipingMat);
+    this.cakeGroup.add(innerLace);
 
-    const domeShell = new THREE.Mesh(domeGeo, this.domeShellMat);
-    domeShell.position.y = 1.45;
-    this.cakeGroup.add(domeShell);
-
-    const arcSpecs = [
-      { radius: 2.24, centerY: 1.44, rotY: 0.15, freq: 3.0, phase: 0.4, speed: 0.22, color: new THREE.Color(0xfef3c7), peakAlpha: 0.52 },
-      { radius: 2.31, centerY: 1.46, rotY: 1.35, freq: 3.5, phase: 2.1, speed: -0.18, color: new THREE.Color(0xfff5f8), peakAlpha: 0.42 },
-      { radius: 2.37, centerY: 1.45, rotY: 2.45, freq: 2.5, phase: 4.0, speed: 0.15, color: new THREE.Color(0xfde68a), peakAlpha: 0.36 },
-    ];
-
-    for (const spec of arcSpecs) {
-      const pts = [];
-      const segments = 64;
-      const startTheta = -0.52;
-      const endTheta = Math.PI + 0.52;
-      for (let i = 0; i <= segments; i += 1) {
-        const theta = startTheta + (i / segments) * (endTheta - startTheta);
-        const x = Math.cos(theta) * spec.radius;
-        const y = spec.centerY + Math.sin(theta) * spec.radius;
-        pts.push(new THREE.Vector3(x, Math.max(0.18, y), 0));
-      }
-
-      const curve = new THREE.CatmullRomCurve3(pts);
-      const tubeGeo = this._track(new THREE.TubeGeometry(curve, 80, 0.0044, 6, false));
-
-      const arcMat = this._track(new THREE.ShaderMaterial({
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        uniforms: {
-          uTime: { value: 0 },
-          uOpacity: { value: 0 },
-          uFreq: { value: spec.freq },
-          uPhase: { value: spec.phase },
-          uSpeed: { value: spec.speed },
-          uColor: { value: spec.color },
-          uPeak: { value: spec.peakAlpha },
-        },
-        vertexShader: /* glsl */ `
-          varying vec2 vUv;
-          void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: /* glsl */ `
-          uniform float uTime;
-          uniform float uOpacity;
-          uniform float uFreq;
-          uniform float uPhase;
-          uniform float uSpeed;
-          uniform vec3 uColor;
-          uniform float uPeak;
-          varying vec2 vUv;
-          void main() {
-            float endFade = smoothstep(0.0, 0.16, vUv.x) * smoothstep(1.0, 0.84, vUv.x);
-            float dash = sin(vUv.x * 6.28318 * uFreq + uPhase + uTime * uSpeed);
-            float broken = smoothstep(-0.08, 0.58, dash);
-            float shimmer = 0.78 + 0.22 * sin(uTime * 1.7 + uPhase);
-            float alpha = endFade * broken * uPeak * shimmer * uOpacity;
-            gl_FragColor = vec4(uColor, alpha);
-          }
-        `,
-      }));
-
-      const mesh = new THREE.Mesh(tubeGeo, arcMat);
-      mesh.rotation.y = spec.rotY;
-      this.cakeGroup.add(mesh);
-      this.domeArcMaterials.push(arcMat);
-    }
+    // 底座接缝处连续的奶油褶皱围边
+    const baseLaceGeo = this._track(createContinuousRuffledPipingGeometry({
+      radius: 0.808,
+      baseY: 0.052,
+      waves: 28,
+      radialAmp: 0.024,
+      verticalAmp: 0.014,
+      tubeRadius: 0.032,
+      tubularSegments: 224,
+    }));
+    const baseLace = new THREE.Mesh(baseLaceGeo, blushPipingMat);
+    this.cakeGroup.add(baseLace);
   }
 
   _buildCandles() {
     this.candles = this.candleStyle === 'number'
       ? createAgeCandles(this.age)
       : createClassicCandles();
-    this.candles.root.position.set(0, 0.88, 0);
+    this.candles.root.position.set(0, 0.85, 0);
     this.cakeGroup.add(this.candles.root);
   }
 
-  _buildFreeSparkles() {
-    // 严格在点蜡烛后才出现，且不限制在圆圈内，自由散落飘浮于整片夜空
+  _buildPostIgniteSparkles() {
+    // 严格在点蜡烛后才出现，且不限制在任何圆圈内，粒子极细小精致（绝不大颗粗钝）
     const palette = [
       new THREE.Color(0xffffff), // 钻石白
       new THREE.Color(0xfff5f8), // 珍珠白
@@ -790,7 +759,7 @@ export class BirthdayScene {
       new THREE.Color(0xfbcfe8), // 柔粉
     ];
 
-    const createLayer = ({ count, tex, sizeMin, sizeMax, speedMin, speedMax, bounds, riseSpeedRange, onCakeOnly = false }) => {
+    const createLayer = ({ count, tex, sizeMin, sizeMax, maxCssPx, speedMin, speedMax, bounds, riseSpeedRange, onCakeOnly = false }) => {
       const positions = new Float32Array(count * 3);
       const colors = new Float32Array(count * 3);
       const sizes = new Float32Array(count);
@@ -804,9 +773,9 @@ export class BirthdayScene {
         let z;
         if (onCakeOnly) {
           const a = Math.random() * Math.PI * 2;
-          const r = 0.28 + Math.random() * 0.56;
+          const r = 0.25 + Math.random() * 0.56;
           x = Math.cos(a) * r;
-          y = 0.10 + Math.random() * 0.92;
+          y = 0.08 + Math.random() * 0.86;
           z = Math.sin(a) * r;
         } else {
           x = bounds.xMin + Math.random() * (bounds.xMax - bounds.xMin);
@@ -833,7 +802,7 @@ export class BirthdayScene {
           y,
           riseSpeed: riseSpeedRange[0] + Math.random() * (riseSpeedRange[1] - riseSpeedRange[0]),
           driftFreq: 0.4 + Math.random() * 0.9,
-          driftAmp: onCakeOnly ? 0.02 : 0.08 + Math.random() * 0.14,
+          driftAmp: onCakeOnly ? 0.015 : 0.06 + Math.random() * 0.12,
           phase: phases[i],
         });
       }
@@ -845,7 +814,7 @@ export class BirthdayScene {
       geo.setAttribute('aPhase', new THREE.BufferAttribute(phases, 1));
       geo.setAttribute('aSpeed', new THREE.BufferAttribute(speeds, 1));
 
-      const mat = this._track(createTwinklePointsMaterial(tex));
+      const mat = this._track(createTwinklePointsMaterial(tex, maxCssPx));
       const points = new THREE.Points(geo, mat);
       points.visible = false;
       this.scene.add(points);
@@ -853,68 +822,70 @@ export class BirthdayScene {
       return { points, geo, mat, meta, count, bounds, onCakeOnly };
     };
 
-    const fullBounds = { xMin: -3.5, xMax: 3.5, yMin: -1.35, yMax: 4.5, zMin: -2.6, zMax: 2.4 };
+    const fullBounds = { xMin: -3.2, xMax: 3.2, yMin: -1.1, yMax: 3.6, zMin: -2.4, zMax: 2.0 };
 
-    // 1. 钻石四角星芒：强闪烁亮晶晶效果，自由飘满全屏
+    // 1. 极细针状钻石星芒（最大仅 15.5 CSS px，璀璨亮晶晶闪烁）
     this.diamondGlints = createLayer({
-      count: 140,
+      count: 130,
       tex: this.glintTex,
-      sizeMin: 0.14,
-      sizeMax: 0.32,
-      speedMin: 2.2,
-      speedMax: 4.8,
-      bounds: fullBounds,
-      riseSpeedRange: [0.08, 0.22],
-    });
-
-    // 2. 柔美粉白金散景光斑：自由漂浮在全屏夜空中
-    this.blushBokeh = createLayer({
-      count: 110,
-      tex: this.dotTex,
-      sizeMin: 0.10,
-      sizeMax: 0.25,
-      speedMin: 1.4,
-      speedMax: 3.0,
+      sizeMin: 0.08,
+      sizeMax: 0.145,
+      maxCssPx: 15.5,
+      speedMin: 2.4,
+      speedMax: 5.2,
       bounds: fullBounds,
       riseSpeedRange: [0.06, 0.18],
     });
 
-    // 3. 细腻星尘微粒：从蛋糕及整片画幅自由上升闪烁
-    this.microStardust = createLayer({
-      count: 260,
+    // 2. 细腻仙女金粉微尘（最大仅 6.5 CSS px，精致小星点铺满夜空）
+    this.fairyDust = createLayer({
+      count: 340,
       tex: this.starTex,
-      sizeMin: 0.055,
-      sizeMax: 0.135,
-      speedMin: 2.5,
-      speedMax: 5.5,
+      sizeMin: 0.028,
+      sizeMax: 0.058,
+      maxCssPx: 6.5,
+      speedMin: 2.6,
+      speedMax: 5.8,
       bounds: fullBounds,
-      riseSpeedRange: [0.14, 0.34],
+      riseSpeedRange: [0.10, 0.28],
     });
 
-    // 4. 点缀在白色奶油裱花与蛋糕身上的亮晶晶小星芒（同样只在点亮后出现）
-    this.crownShimmers = createLayer({
-      count: 60,
-      tex: this.glintTex,
-      sizeMin: 0.08,
-      sizeMax: 0.16,
-      speedMin: 2.6,
-      speedMax: 5.0,
+    // 3. 精致微光小圆点（最大仅 8.0 CSS px，绝无大坨模糊球）
+    this.microBokeh = createLayer({
+      count: 90,
+      tex: this.dotTex,
+      sizeMin: 0.032,
+      sizeMax: 0.068,
+      maxCssPx: 8.0,
+      speedMin: 1.5,
+      speedMax: 3.2,
       bounds: fullBounds,
-      riseSpeedRange: [0.0, 0.02],
+      riseSpeedRange: [0.05, 0.15],
+    });
+
+    // 4. 点亮后才在白色奶油裱花上闪耀的细微星芒
+    this.crownShimmers = createLayer({
+      count: 55,
+      tex: this.glintTex,
+      sizeMin: 0.038,
+      sizeMax: 0.075,
+      maxCssPx: 9.0,
+      speedMin: 2.8,
+      speedMax: 5.4,
+      bounds: fullBounds,
+      riseSpeedRange: [0.0, 0.015],
       onCakeOnly: true,
     });
-    // 把蛋糕体表面的亮晶晶挂到 cakeGroup 上随蛋糕一起旋转
     this.scene.remove(this.crownShimmers.points);
     this.cakeGroup.add(this.crownShimmers.points);
 
-    this.sparkleLayers = [this.diamondGlints, this.blushBokeh, this.microStardust, this.crownShimmers];
+    this.sparkleLayers = [this.diamondGlints, this.fairyDust, this.microBokeh, this.crownShimmers];
   }
 
   _buildFireworks() {
     this.fireworkBursts = [];
     const burstCount = 5;
     const perBurst = 115;
-    // 烟花配色与蛋糕统一：珍珠白、香槟金、樱粉、玫瑰金
     const colors = [0xffffff, 0xfde68a, 0xffd6e7, 0xfbcfe8, 0xf5d08a, 0xfff5f8];
 
     for (let b = 0; b < burstCount; b += 1) {
@@ -937,7 +908,7 @@ export class BirthdayScene {
       geo.setAttribute('color', new THREE.BufferAttribute(vColors, 3));
 
       const mat = this._track(new THREE.PointsMaterial({
-        size: 0.17,
+        size: 0.11,
         map: this.glintTex,
         vertexColors: true,
         transparent: true,
@@ -966,11 +937,11 @@ export class BirthdayScene {
 
   _launchFireworks() {
     const origins = [
-      new THREE.Vector3(-1.45, 2.75, -0.8),
-      new THREE.Vector3(1.45, 2.85, -0.6),
-      new THREE.Vector3(0.0, 3.35, -1.1),
-      new THREE.Vector3(-1.1, 2.2, 0.5),
-      new THREE.Vector3(1.1, 2.3, 0.4),
+      new THREE.Vector3(-1.35, 2.35, -0.7),
+      new THREE.Vector3(1.35, 2.45, -0.6),
+      new THREE.Vector3(0.0, 2.85, -1.0),
+      new THREE.Vector3(-1.0, 1.95, 0.4),
+      new THREE.Vector3(1.0, 2.05, 0.4),
     ];
 
     this.fireworkBursts.forEach((burst, idx) => {
@@ -982,7 +953,7 @@ export class BirthdayScene {
 
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos(2 * Math.random() - 1);
-        const speed = 1.15 + Math.random() * 2.1;
+        const speed = 1.1 + Math.random() * 2.0;
         burst.velocities[i * 3] = Math.sin(phi) * Math.cos(theta) * speed;
         burst.velocities[i * 3 + 1] = Math.cos(phi) * speed + 0.55;
         burst.velocities[i * 3 + 2] = Math.sin(phi) * Math.sin(theta) * speed;
@@ -1005,8 +976,10 @@ export class BirthdayScene {
       this.renderer.setSize(width, height);
       this.composer.setSize(width, height);
       this.bloomPass.setSize(width, height);
+      const pr = Math.min(window.devicePixelRatio || 1, 2);
+      this.cakeVeilMat.uniforms.uPixelRatio.value = pr;
       for (const layer of this.sparkleLayers) {
-        layer.mat.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 2);
+        layer.mat.uniforms.uPixelRatio.value = pr;
       }
       this._updateCameraFraming();
     };
@@ -1045,18 +1018,18 @@ export class BirthdayScene {
     const aspect = this.camera.aspect;
     const isPortrait = aspect < 0.85;
     const halfTanY = Math.tan(THREE.MathUtils.degToRad(this.camera.fov * 0.5));
-    // 让直径 4.76 的拉高拉大外圈在 390px 竖屏两侧留白完整入画
-    const fitPortraitDist = Math.min(16.0, Math.max(9.6, 2.48 / (halfTanY * Math.max(0.38, aspect))));
+    // 去掉多余外圈后，拉近构图让细腻的奶油裱花纹理与通透光感成为绝对主角
+    const fitPortraitDist = Math.min(10.5, Math.max(6.2, 1.56 / (halfTanY * Math.max(0.38, aspect))));
 
     if (this.state === 'wish') {
-      this.targetCamOffset.set(0, isPortrait ? 2.45 : 2.35, isPortrait ? fitPortraitDist * 0.72 : 6.2);
-      this.targetLookAt.set(0, isPortrait ? 0.68 : 1.05, 0);
+      this.targetCamOffset.set(0, isPortrait ? 1.95 : 1.75, isPortrait ? fitPortraitDist * 0.78 : 4.2);
+      this.targetLookAt.set(0, isPortrait ? 0.56 : 0.72, 0);
     } else if (this.state === 'blown') {
-      this.targetCamOffset.set(0, isPortrait ? 2.95 : 2.55, isPortrait ? fitPortraitDist * 1.02 : 9.4);
-      this.targetLookAt.set(0, isPortrait ? 0.35 : 1.08, 0);
+      this.targetCamOffset.set(0, isPortrait ? 2.25 : 2.05, isPortrait ? fitPortraitDist * 1.06 : 5.8);
+      this.targetLookAt.set(0, isPortrait ? 0.25 : 0.58, 0);
     } else {
-      this.targetCamOffset.set(0, isPortrait ? 2.75 : 2.45, isPortrait ? fitPortraitDist : 9.2);
-      this.targetLookAt.set(0, isPortrait ? 0.30 : 1.04, 0);
+      this.targetCamOffset.set(0, isPortrait ? 2.10 : 1.85, isPortrait ? fitPortraitDist : 5.2);
+      this.targetLookAt.set(0, isPortrait ? 0.22 : 0.52, 0);
     }
 
     if (this.state === 'intro') {
@@ -1171,24 +1144,20 @@ export class BirthdayScene {
       this.sparkleProgress = 0;
     } else {
       this.lightProgress = Math.min(1, this.lightProgress + dt * 1.15);
-      this.sparkleProgress = Math.min(1, this.sparkleProgress + dt * 0.72);
+      this.sparkleProgress = Math.min(1, this.sparkleProgress + dt * 0.78);
     }
 
-    const easeLight = this.state === 'intro' ? 0.55 : 0.55 + 0.45 * (1 - Math.pow(1 - this.lightProgress, 3));
+    const easeLight = this.state === 'intro' ? 0.56 : 0.56 + 0.44 * (1 - Math.pow(1 - this.lightProgress, 3));
     const easeSparkles = this.state === 'intro' ? 0 : 1 - Math.pow(1 - this.sparkleProgress, 2.2);
 
-    this.ambient.intensity = THREE.MathUtils.lerp(0.32, 0.72, easeLight);
-    this.keyLight.intensity = THREE.MathUtils.lerp(0.35, 1.05, easeLight);
-    this.rimLight.intensity = THREE.MathUtils.lerp(0.28, 0.75, easeLight);
+    this.ambient.intensity = THREE.MathUtils.lerp(0.38, 0.68, easeLight);
+    this.keyLight.intensity = THREE.MathUtils.lerp(0.50, 1.12, easeLight);
+    this.rimLight.intensity = THREE.MathUtils.lerp(0.38, 0.85, easeLight);
 
-    this.bgStars.material.opacity = this.state === 'intro' ? 0.08 : 0.42 * easeSparkles;
+    this.cakeVeilMat.uniforms.uTime.value = this.elapsed;
+    this.cakeVeilMat.uniforms.uOpacity.value = this.state === 'intro' ? 0.52 : 0.86;
 
-    this.domeShellMat.uniforms.uTime.value = this.elapsed;
-    this.domeShellMat.uniforms.uOpacity.value = easeLight;
-    for (const mat of this.domeArcMaterials) {
-      mat.uniforms.uTime.value = this.elapsed;
-      mat.uniforms.uOpacity.value = easeLight;
-    }
+    this.bgStars.material.opacity = this.state === 'intro' ? 0.04 : 0.32 * easeSparkles;
 
     for (const layer of this.sparkleLayers) {
       this._updateSparkleLayer(layer, dt, easeSparkles);
@@ -1226,8 +1195,13 @@ export class BirthdayScene {
     this.glintTex.dispose();
     this.starTex.dispose();
     this.sideTextures.map.dispose();
-    this.sideTextures.emissiveMap.dispose();
-    this.topTex.dispose();
+    this.sideTextures.bumpMap.dispose();
+    this.topTextures.map.dispose();
+    this.topTextures.bumpMap.dispose();
+    this.whitePipingTex.map.dispose();
+    this.whitePipingTex.bumpMap.dispose();
+    this.blushPipingTex.map.dispose();
+    this.blushPipingTex.bumpMap.dispose();
     for (const item of this.extraDisposables) {
       if (typeof item.dispose === 'function') item.dispose();
     }
